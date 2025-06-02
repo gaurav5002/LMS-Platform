@@ -30,7 +30,7 @@ const protectRoute = async (req,res,next) => {
         })
     }
 }
-const manageraccess = async(req,res,next)=>{
+const instructorAccess = async(req,res,next)=>{
     try {
         const user = req.user;
         if(!user){
@@ -62,4 +62,4 @@ const adminaccess = async(req,res,next)=>{
 }
 export {adminaccess}
 export {protectRoute}
-export {manageraccess}
+export {instructorAccess}
