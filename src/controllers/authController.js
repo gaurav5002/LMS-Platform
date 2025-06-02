@@ -6,6 +6,7 @@ import User from '../models/user.js';
 import OtpModel from '../models/otp.js';
 import mongoose from 'mongoose';
 import { OAuth2Client } from 'google-auth-library';
+import PendingRequests from '../models/PendingRequests.js';
 
 dotenv.config();
 
@@ -309,7 +310,7 @@ export async function resetPassword(req, res) {
 
 export async function RegisterInstructor(req, res) {
   try {
-    const { name, email, password, role = 'instructor' } = req.body;
+    const { name, email, password, role = 'instructor',resumeUrl,idProofUrl } = req.body;
     if (!name || !email || !password) {
       return res.status(400).json({ success: false, message: 'Please fill all fields.' });
     }
@@ -320,6 +321,8 @@ export async function RegisterInstructor(req, res) {
 
     const hashed = await bcrypt.hash(password, 10);
     const newUser = await User.create({ name, email, password: hashed, role, isVerified: false });
+
+    await PendingRequests.create({instructorId:newUser._id,resumeUrl,idProofUrl});
 
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: JWT_EXPIRES });
     res.cookie('jwt', token, COOKIE_OPTIONS);
@@ -353,6 +356,9 @@ export async function verifyInstructor(req, res) {
     }
 
     const { instructorId } = req.body;
+
+    await PendingRequests.deleteOne({instructorId});
+
     if (!mongoose.Types.ObjectId.isValid(instructorId)) {
       return res.status(400).json({ message: 'Invalid instructor ID' });
     }
@@ -422,6 +428,7 @@ export async function rejectInstructor(req, res) {
     }
 
     const email = instructor.email;
+     await PendingRequests.deleteOne({instructorId:instructor._id});
     await User.findByIdAndDelete(instructor._id);
 
     const sent = await sendEmail(email, {
