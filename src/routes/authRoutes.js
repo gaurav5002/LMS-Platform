@@ -16,8 +16,8 @@ import {
 } from '../controllers/authController.js';
 
 
-import { adminaccess, protectRoute } from '../authMiddleWare/protectRoute.js';
-import { otpRequestLimiter, loginRequestLimiter } from '../authMiddleWare/rateLimit.js';
+import { adminaccess, protectRoute } from '../middleWare/authMiddleWare/protectRoute.js';
+import { otpRequestLimiter, loginRequestLimiter } from '../middleWare/authMiddleWare/rateLimit.js';
 
 
 //general routes to signin and signout 
