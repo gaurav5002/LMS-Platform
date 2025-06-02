@@ -56,10 +56,34 @@ const adminaccess = async(req,res,next)=>{
             return next();
         }
         return res.status(401).json({success:false,message:"you are not authorised to access this route sorry"});
-    } catch (error) {
-        
+    } catch (e) {
+        return res.status(500).json({
+            success:false,
+            message:"Server error",
+            error:e.message
+        })
+    }
+}
+const enrollmentAccess = async(req,res,next)=>{
+    try {
+        const user = req.user;
+        const courseId = req.body.courseId;
+        const lessonidx = req.body.lessonidx;
+        if(!user.enrolledCourses.includes(courseId) && lessonidx>1){
+            req.enrolled = false;
+        }else{
+            req.enrolled = true;
+        }
+        return next();
+    } catch (e) {
+        return res.status(500).json({
+            success:false,
+            message:"Server error",
+            error:e.message
+        })
     }
 }
 export {adminaccess}
 export {protectRoute}
 export {instructorAccess}
+export {enrollmentAccess}

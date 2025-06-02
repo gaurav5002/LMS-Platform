@@ -26,6 +26,10 @@ const userSchema = new mongoose.Schema({
         type:Boolean,
         default:false,
     },
+    enrolledCourses:{
+        type :[String],
+        default:[]
+    }
 })
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
