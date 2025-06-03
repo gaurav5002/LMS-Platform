@@ -19,6 +19,8 @@ import {
 import { adminaccess, protectRoute } from '../middleWare/authMiddleWare/protectRoute.js';
 import { otpRequestLimiter, loginRequestLimiter } from '../middleWare/authMiddleWare/rateLimit.js';
 
+import nosqlSanitizer from '../middleWare/authMiddleWare/injectionProtect.js';
+router.use(nosqlSanitizer);
 
 //general routes to signin and signout 
 router.post('/signup', register);
