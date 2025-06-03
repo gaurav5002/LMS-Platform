@@ -1,8 +1,8 @@
-import { Course, Lesson } from "../models/Course";
+import { Course, Lesson } from "../models/Course.js";
 import mongoose from "mongoose";
-import User from "../models/user";
-import UserProgress from "../models/UserProgress";
-import Discussions from "../models/Discussions";
+import User from "../models/user.js";
+import UserProgress from "../models/UserProgress.js";
+import Discussions from "../models/Discussions.js";
 export async function addCourse(req,res){
     try {
         const user = req.user;

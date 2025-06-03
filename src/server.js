@@ -2,7 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.js";
 import cookieParser from "cookie-parser";
-
+import uploadRoutes from "./routes/fileUploadRoutes.js";
+import userRoutes from "./routes/UserRoutes.js"
 import cors from 'cors';
 dotenv.config();
 import path from "path"
@@ -20,6 +21,8 @@ app.use(cors({
 }));
 
 app.use("/api/auth",authRoutes);
+app.use("api/fileUpload",uploadRoutes);
+app.use("/api/users",userRoutes);
 
 dbConnect();
 const PORT = process.env.PORT || 5002;
