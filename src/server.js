@@ -5,6 +5,8 @@ import cookieParser from "cookie-parser";
 import uploadRoutes from "./routes/fileUploadRoutes.js";
 import userRoutes from "./routes/UserRoutes.js"
 import cors from 'cors';
+
+
 dotenv.config();
 import path from "path"
 const app = express();
@@ -13,6 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // if you ever post form data
 
 app.use(cookieParser());
+
 app.use(cors({
   origin: 'http://localhost:5173',  // allow your front-end
   credentials: true,                // enable Set-Cookie and Cookie headers
