@@ -1,5 +1,7 @@
 import express from "express";
-import { protectRoute,adminaccess,instructorAccess,enrollmentAccess } from "../middleWare/authMiddleWare/protectRoute";
+import { protectRoute,adminaccess,instructorAccess,enrollmentAccess } from "../middleWare/authMiddleWare/protectRoute.js";
+import { addCourse, addLesson, addMessage, enroll, getAllCourses, getCurrentCourse, getDiscussion, getLesson } from "../controllers/userController.js";
+
 //we will be using payment middle ware later on ... 
 const router = express.Router();
 router.use(protectRoute);
@@ -34,19 +36,19 @@ router.post('/users/addMessage',addMessage);
 
 
 
-router.post('/users/getPendingRequests',adminaccess,getPendingRequests);
+// router.post('/users/getPendingRequests',adminaccess,getPendingRequests);
 
 
 
-router.post('/users/getLessons',enrollmentAccess,getLessons);// we will need the index of the lesson to the post index . 
+router.post('/users/getLessons',enrollmentAccess,getLesson);// we will need the index of the lesson to the post index . 
 
 
 
-router.post('/users/updateProgress',updateProgress);
+// router.post('/users/updateProgress',updateProgress);
 
 
 
-router.post('/users/getProgress',getProgress);
+// router.post('/users/getProgress',getProgress);
 
 export default router;
 
