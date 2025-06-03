@@ -1,13 +1,11 @@
 import mongoose from "mongoose";
-import { Lesson } from "./Course";
+import { Lesson } from "./Course.js";
 
 const newQuizSchema = mongoose.Schema({
     LessonId:{
         type:String,
         required:true,
     },
-
-
     theoryQuestions:{
         type:[String],
     },
@@ -15,9 +13,7 @@ const newQuizSchema = mongoose.Schema({
         type:[String],
         default:[]
     },
-
-
-    MCQs:{
+    Mcqs:{
         type:[String]
     },
     McqOpts:{

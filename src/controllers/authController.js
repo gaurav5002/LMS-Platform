@@ -7,6 +7,7 @@ import OtpModel from '../models/otp.js';
 import mongoose from 'mongoose';
 import { OAuth2Client } from 'google-auth-library';
 import PendingRequests from '../models/PendingRequests.js';
+import Cart from '../models/Cart.js';
 
 dotenv.config();
 
@@ -59,6 +60,10 @@ export async function register(req, res) {
     const hashed = await bcrypt.hash(password, 10);
     const newUser = await User.create({ name, email, password: hashed, role, isVerified: false });
 
+    await Cart.create({
+      userId:newUser._id
+    });
+
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: JWT_EXPIRES });
     res.cookie('jwt', token, COOKIE_OPTIONS);
     await SendOtp({email});
@@ -83,7 +88,8 @@ async function SendOtp(obj){
      const email = obj.email;
      const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found.' });
+      // return res.status(404).json({ success: false, message: 'User not found.' });
+      return false;
     }
 
     let existingOtp = await OtpModel.findOne({ email });
@@ -380,12 +386,13 @@ export async function verifyInstructor(req, res) {
     });
 
     return res.status(200).json({
+      success:true,
       message: 'Instructor successfully verified',
       instructor
     });
   } catch (error) {
     console.error('verifyInstructor error:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ success:false,message: 'Internal server error' });
   }
 }
 
@@ -436,7 +443,7 @@ export async function rejectInstructor(req, res) {
       html: `<h1>Rejected for some reason. You can definitely reapply.</h1>`,
     });
 
-    return res.status(200).json({ message: "Instructor rejected" });
+    return res.status(200).json({success:true, message: "Instructor rejected" });
   } catch (e) {
     console.error(e);
     return res.status(500).json({ success: false, message: 'Internal server error', error: e });
@@ -447,10 +454,14 @@ export async function googleLogin(req, res) {
   try {
     const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
     const { token } = req.body;
+
+
     // Example usage in front-end:
     // <GoogleLogin onSuccess={credentialResponse => {
     //   axiosInstance.post('/auth/googleLogin', { token: credentialResponse.credential });
     // }} />
+
+
     const ticket = await client.verifyIdToken({
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,

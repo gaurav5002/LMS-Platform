@@ -1,0 +1,194 @@
+default url = /api/auth
+
+get REquest 
+
+1) "/me" 
+
+body :none 
+
+response{
+    success,
+    user 
+}
+
+POST REQUESTS 
+
+
+the process of signup will look like this ->
+the user first clicks signup then cuz the "isverified" is false he will be sent to verification page and an otp will be sent (inbuilt in signup route ). and there when he clicks confirm otp then you must hit the verifyEmail route 
+
+1)"/signup"
+
+body:{
+    name,email,password
+}
+
+response:{
+      success
+      message,
+      user: {
+        id
+        name 
+        email 
+        role 
+      }
+}
+
+
+
+2)login 
+body:{
+    email,password 
+}
+"jwt cookies will be added"
+response:{
+      success: true,
+      message: 'Logged in.',
+      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+}
+
+
+3)logout 
+nothing but clears the jwt cookie from the cookies 
+
+
+4)verifyEmail 
+    send in strings both otp and email 
+    body:{
+        email,otp 
+    }
+    response:{
+        success,
+        message.//if not success show the message 
+    }
+
+
+
+password Reset process 
+there will be a button named reset password when he clicks it you must hit the sendotp route .
+then you must reddirect him to another page saying enter otp newPassword then hit the resetPassword route with them as below 
+
+5)sendOtp 
+    body:{
+        email 
+    }
+    response:{
+        nothing much use ful 
+         success: true, message: 'OTP sent.'//if the success is false then show him the message . 
+    }
+
+6)changepassword
+    body:{
+        email,otp,newPassword
+    }
+    response:{
+        success,message
+    }
+
+
+
+
+7)instructorRegister
+    body:{
+        name, email, password,resumeUrl,idProofUrl
+    }
+    response:{
+        success: true,
+      message: 'Registered successfully. Wait for admin verification.',
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
+      },
+    }
+
+8)verifyInstructor
+body:{
+    instructorId
+}
+res:{
+    success:true,
+      message: 'Instructor successfully verified',
+      instructor
+}
+
+9)rejectInstructor
+body:{
+    instructorId
+}
+response:{
+    success:true, message: "Instructor rejected"
+}
+
+10)createAdmin
+body:{
+    name, email, password 
+}
+response:{
+    success: true,
+      message: 'Registered successfully.',
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
+      },
+}
+
+the front end part for the google login is given below . basically token is a google generated credential. 
+11)googleLogin
+body:{
+    token 
+}
+this route generates a jwt token on successful login . which you have to fetch after the loading is done thats why i was asking you to use tanstack query . which is very helpful in refetching things 
+
+
+
+
+
+import React from 'react';
+import { GoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
+
+function GoogleLoginButton() {
+  const handleSuccess = async (credentialResponse) => {
+    try {
+      const token = credentialResponse.credential;
+      const res = await axios.post('http://localhost:5001/auth/googleLogin', {
+        token
+      }, {
+        withCredentials: true
+      });
+
+      console.log("Login successful:", res.data);
+    } catch (err) {
+      console.error("Google login failed:", err.response?.data || err.message);
+    }
+  };
+
+  return (
+    <div>
+      <h2>Login with Google</h2>
+      <GoogleLogin onSuccess={handleSuccess} onError={() => console.log("Login Failed")} />
+    </div>
+  );
+}
+
+export default GoogleLoginButton;
+
+and dont forget to wrapp the app in googleOauthprovider tag . 
+like this 
+
+the client id given below is a working client id which will be shifted to the env.
+<GoogleOAuthProvider clientId="507714766935-9qra3bi89sep137j99505qkdcseaporr.apps.googleusercontent.com">
+      <App />
+</GoogleOAuthProvider>
+
+
+
+
+
+
+
+
