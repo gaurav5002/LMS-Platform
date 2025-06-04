@@ -234,7 +234,9 @@ instructor
   "resumeUrl":"johncena",
   "idProofUrl":"johncena "
 }
+683fb75a066779ca0e76ae26
 
+683fcdfb22487ffbf475db02 -> course dsa 
 
 {
   "name": "Full Stack Web Development",
@@ -254,3 +256,94 @@ instructor
   "duration": "25:30",
   "description": "This lesson covers the basics of REST APIs, HTTP methods, and best practices."
 }
+
+
+
+{
+  "lessonId": "683fbe122982470f3a0262d3",
+  "title": "JavaScript Basics Quiz",
+  "theoryQuestions": [
+    "Explain the difference between `let`, `var`, and `const` in JavaScript.",
+    "What is hoisting in JavaScript?"
+  ],
+  "theoryAnswers": [
+    "`var` is function scoped, `let` and `const` are block scoped. `const` cannot be reassigned.",
+    "Hoisting is JavaScript's default behavior of moving declarations to the top."
+  ],
+  "Mcqs": [
+    "Which of the following is not a JavaScript data type?",
+    "What does `===` mean in JavaScript?"
+  ],
+  "McqOpts": [
+    ["String", "Number", "Boolean", "Character"],
+    ["Assignment operator", "Strict equality operator", "Comparison operator", "None of the above"]
+  ]
+}
+
+
+
+//protocol to test the website user ends .
+1) create another instructor 
+2) verify it using an admin
+3) add a course note every response 
+4) add lessons 2 or 3 
+
+5) add quizzes 
+6) login as a user 
+7) enroll in a course 
+8) submit quiz 
+9) try to update progress .
+10)fetch the progress . 
+11) add another course 
+12) using the user add the second course to cart 
+13) enroll in the course 
+14) get the cart courses. if still shows then faulty logic smewheer 
+
+
+INTSTRUCTOR ->
+{
+  "email": "jane.doe@example.com",
+  "password": "StrongPass123!",
+  "name": "Jane Doe",
+    "resumeUrl":" ",
+    "idProofUrl":" "
+}
+
+{
+    "success": true,
+    "message": "Registered successfully. Wait for admin verification.",
+    "user": {
+        "id": "683ff106559a01462930d0be",
+        "name": "Jane Doe",
+        "email": "jane.doe@example.com",
+        "role": "instructor"
+    }
+}
+
+
+
+new course 
+{
+    "message": "course created succesfully ",
+    "newCourse": {
+        "name": "Advanced Operating Systems",
+        "photoUrl": "https://example.com/images/advanced-os.jpg",
+        "instructor": "683ff106559a01462930d0be",
+        "description": "Explore advanced concepts in operating systems including concurrency, memory management, and file systems with practical C++ examples.",
+        "skills": [
+            "Processes",
+            "Threads",
+            "Synchronization",
+            "Memory Management",
+            "File Systems",
+            "C++"
+        ],
+        "lessons": [],
+        "price": 199,
+        "_id": "683ff206559a01462930d0c9",
+        "__v": 0
+    }
+}
+
+
+quiz added to the lesson 683ff274559a01462930d0d0

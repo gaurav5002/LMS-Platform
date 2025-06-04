@@ -36,7 +36,7 @@ router.post('/addMessage',addMessage);//done
 
 
 
-router.post('/getPendingRequests',adminaccess,getPendingRequests);
+
 
 
 
@@ -44,25 +44,37 @@ router.post('/getLessons',enrollmentAccess,getLesson);// we will need the index 
 
 
 
-router.post('/updateProgress',enrollmentAccess,updateProgress);
 
 
 
-router.post('/getProgress',getProgress);
 
-router.post('/addQuiz',instructorAccess,addQuiz);
+router.post('/getProgress',getProgress);//done 
 
-router.post('/submitQuiz',submitQuiz);
 
-router.post('/addToCart',addToCart);
 
-router.post('/removeFromCart',removeFromCart);
+router.post('/addToCart',addToCart);//done
+
+router.post('/removeFromCart',removeFromCart);//done
 
 router.post('/getCartCourses',getCartCourses);//done 
 
-router.post('/getQuiz',getQuiz);
 
 router.post('/getMyCourses',getMyCourses);//done
+
+
+router.post('/addQuiz',instructorAccess,addQuiz);//done
+
+router.post('/getQuiz',getQuiz);//done
+
+
+router.post('/updateProgress',enrollmentAccess,updateProgress);
+
+router.post('/submitQuiz',submitQuiz);
+
+
+router.post('/getPendingRequests',adminaccess,getPendingRequests);
+
+
 
 
 
