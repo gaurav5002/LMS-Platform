@@ -122,6 +122,23 @@ export async function enroll(req,res) {
         }
 
         const enrolledCourses = user.enrolledCourses;
+        const cart = await Cart.findOne({userId:user._id});
+        const cartCourses = cart.courses;
+          if (cart) {
+            const cartCourses = cart.courses || [];
+
+            const index = cartCourses.indexOf(courseId);
+            if (index !== -1) {
+                cartCourses.splice(index, 1); // remove the course
+                await Cart.findByIdAndUpdate(cart._id,{
+                     courses: cartCourses 
+                })
+            }
+        }
+
+        if (!enrolledCourses.includes(courseId)) {
+            enrolledCourses.push(courseId);
+        }
         if(!enrolledCourses.includes(courseId)){
             enrolledCourses.push(courseId);
         }
@@ -276,16 +293,16 @@ export async function getProgress(req,res){
 
 export async function addQuiz(req,res){
     try {
-        const lessonId = req.body.lessonId;
+        const lessonId = req.body.lessonId.toString();//you will get lesson id from the currrent course returning everything . store every lesson id in a local variables or some handling .
         const {title,theoryQuestions,theoryAnswers,Mcqs,McqOpts} = req.body;
         const newQuiz = await Quiz.create({
-            title,theoryQuestions,theoryAnswers,Mcqs,McqOpts
+            lessonId,title,theoryQuestions,theoryAnswers,Mcqs,McqOpts
         });
         const lesson = await Lesson.findById(lessonId);
         if(!lesson){
             return res.status(404).json({message:"lesson does not exist"});
         }
-        await Lesson.findByIdAndUpdate({
+        await Lesson.findByIdAndUpdate(lessonId,{
             quizId:newQuiz._id
         });
         return res.status(200).json({message:"successully completed"});
@@ -373,7 +390,7 @@ export async function getQuiz(req, res) {
         if (!lesson) {
             return res.status(404).json({ message: "Lesson not found" });
         }
-        const quiz = await Quiz.findOne({ LessonId: lessonId });
+        const quiz = await Quiz.findOne({ lessonId: lessonId });
         if (!quiz) {
             return res.status(404).json({ message: "Quiz not found for this lesson" });
         }

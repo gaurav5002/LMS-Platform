@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { Lesson } from "./Course.js";
 
 const newQuizSchema = mongoose.Schema({
-    LessonId:{
+    lessonId:{
         type:String,
         required:true,
     },
