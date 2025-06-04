@@ -48,19 +48,20 @@ export async function  addLesson(req,res) {
         //first we will provide an endpoint which takes input of files and returns their urls store them.
         //then we will have a create quiz enndpoint at our side which will return the quiz then you can extract the quizid from there and send it to the add lesson endpoint.set it to "" initially
         const user = req.user;
-        const course = Course.findById(courseId);
+        const course = await Course.findById(courseId);
         if(!course){
             return res.status(404).json({message:"no course exists"});
         }
-        const instructor = course.instructor;
-
-        if(user._id!==instructor){
+        const instructor = course.instructor.toString();
+        const uid = user._id.toString();
+        console.log(user._id);
+        if(uid!==instructor){
             return res.status(403).json({message:"forbidden request you are not allowed to do this"})
         }
 
         const {title,videoUrl,notesUrl,quizId,duration,description} = req.body;
 
-        const lesson = Lesson.create({
+        const lesson = await Lesson.create({
             courseId,
             title,
             videoUrl,
@@ -99,7 +100,7 @@ export async function getAllCourses(req,res){
 
 export async function getCurrentCourse(req,res){
     try {
-        const course = Course.findById(req.body.courseId);
+        const course = await Course.findById(req.body.courseId);
         if(!course){
             return res.json(404).json({message:"course not found "});
         }
@@ -160,7 +161,7 @@ export async function addMessage(req,res){
         const messageBody = req.body.messageBody;
         const courseId = req.body.courseId;
         const user = req.user;
-        const discussion = Discussions.findOne({courseId:courseId});
+        const discussion = await Discussions.findOne({courseId:courseId});
 
         if(!user.enrolledCourses.includes(courseId)){
             return res.status(403).json({message:"forbidden you are not authorised to use this course"});

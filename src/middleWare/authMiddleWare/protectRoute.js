@@ -36,10 +36,11 @@ const instructorAccess = async(req,res,next)=>{
         if(!user){
             return res.status(401).json({message:"you are not logged in "});
         }
-        if(user.role==="manager"&&user.isVerified){
+        console.log(user.role);
+        if(user.role==="instructor"&&user.isVerified){
             return next();
         }
-        return res.status(403).json({message:"you have to be atleast manager to access this route "});
+        return res.status(403).json({message:"you have to be atleast instructor to access this route "});
     } catch (e) {
        return res.status(500).json({
             success:false,

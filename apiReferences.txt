@@ -234,3 +234,23 @@ instructor
   "resumeUrl":"johncena",
   "idProofUrl":"johncena "
 }
+
+
+{
+  "name": "Full Stack Web Development",
+  "photoUrl": "https://example.com/images/web-dev-course.jpg",
+  "description": "Learn how to build modern web applications using JavaScript, React, Node.js, and MongoDB.",
+  "skills": ["JavaScript", "React", "Node.js", "MongoDB", "Express"],
+  "price": 199.99
+}
+
+
+{
+  "courseId": "683fbb6d7b90542a32631fc7",
+  "title": "Introduction to REST APIs",
+  "videoUrl": "https://cdn.example.com/videos/rest-api-intro.mp4",
+  "notesUrl": "https://cdn.example.com/notes/rest-api-intro.pdf",
+  "quizId": "",  // Will be updated later after quiz creation
+  "duration": "25:30",
+  "description": "This lesson covers the basics of REST APIs, HTTP methods, and best practices."
+}

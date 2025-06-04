@@ -1,3 +1,4 @@
+import { strict } from "assert";
 import mongoose from "mongoose";
 
 
@@ -31,8 +32,8 @@ const lessonSchema = new mongoose.Schema({
   },
 
   duration: {
-    type: Number,
-    default:1 //say in hours
+    type: String,
+    default:"1" //say in hours
   },
 
 });
