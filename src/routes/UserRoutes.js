@@ -50,6 +50,7 @@ router.post('/getLessons',enrollmentAccess,getLesson);// we will need the index 
 
 router.post('/getProgress',getProgress);//done 
 
+router.post('/getCurrentLesson',get)
 
 
 router.post('/addToCart',addToCart);//done
@@ -67,9 +68,9 @@ router.post('/addQuiz',instructorAccess,addQuiz);//done
 router.post('/getQuiz',getQuiz);//done
 
 
-router.post('/updateProgress',enrollmentAccess,updateProgress);
+router.post('/updateProgress',enrollmentAccess,updateProgress);//done 
 
-router.post('/submitQuiz',submitQuiz);
+router.post('/submitQuiz',submitQuiz);//done 
 
 
 router.post('/getPendingRequests',adminaccess,getPendingRequests);
