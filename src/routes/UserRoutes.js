@@ -50,7 +50,7 @@ router.post('/getLessons',enrollmentAccess,getLesson);// we will need the index 
 
 router.post('/getProgress',getProgress);//done 
 
-router.post('/getCurrentLesson',get)
+// router.post('/getCurrentLesson',get)
 
 
 router.post('/addToCart',addToCart);//done
