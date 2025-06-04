@@ -102,10 +102,10 @@ export async function getCurrentCourse(req,res){
     try {
         const course = await Course.findById(req.body.courseId);
         if(!course){
-            return res.json(404).json({success:false,message:"course not found "});
+            return res.status(404).json({success : false,message:"course not found"})
         }
-        return res.status(200).json({success:true,message:"course Fetched",course});
-
+        const arrayOfLessons = await Lesson.find({_id:{$in:course.lessons}});
+        return res.status(200).json({success:true,message:"course Fetched",course,arrayOfLessons});
     } catch (e) {
         return res.status(500).json({success:false,message:"internalServerError",e});
     }
@@ -480,8 +480,9 @@ export async function getCartCourses(req, res) {
         if (!cart) {
             return res.status(404).json({ message: "Cart does not exist" });
         }
+        const arrayOfCourses = await Course.find({_id:{$in:cart.courses}});
 
-        return res.status(200).json({ cartCourses: cart.courses });
+        return res.status(200).json({ cartCourses: arrayOfCourses});
     } catch (e) {
         return res.status(500).json({ message: "Internal server error" });
     }
@@ -491,34 +492,11 @@ export async function getCartCourses(req, res) {
 export async function getMyCourses(req, res) {
   try {
     const user = req.user;
-
-    const courses = await Promise.all(
-      user.enrolledCourses.map(async (courseId) => {
-        const course = await Course.findById(courseId)
-          .select("_id name photoUrl description skills instructor") 
-          .populate({
-            path: "instructor",
-            select: "name",
-          });
-
-        if (!course) return null;
-
-        const courseObj = course.toObject();
-
-        return {
-          _id: courseObj._id,
-          name: courseObj.name,
-          photoUrl: courseObj.photoUrl,
-          description: courseObj.description,
-          skills: courseObj.skills,
-          instructorName: courseObj.instructor?.name || "Unknown"
-        };
-
-      })
-    );
-
+    const courses = await Course.find({_id:{$in:user.enrolledCourses}});
+    if(!courses){
+        return res.status(404).json({message:"you donot have any current courses...",courses:[]});
+    }
     const filteredCourses = courses.filter(c => c !== null);
-
     return res.status(200).json({ courses: filteredCourses });
   } catch (e) {
     console.error("getMyCourses error:", e);
