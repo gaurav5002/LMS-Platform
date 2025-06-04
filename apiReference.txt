@@ -64,6 +64,7 @@ response:{
         success,
         message 
     }
+
 7)/getDiscussion
     body:{
         courseId 
@@ -81,6 +82,7 @@ for filling the the course page what you will do is . you will call this api and
 //another method . fill the lessons every thing video url... and everything . during getlessons . ->so many find_by_id rrequests this is slow at beginning but superfast during user interaction .
  like loading the initial page will take a lot of time but the accessing urls will be much faster than inital thing.
 //so we can discuss about this thing today evening 
+
 8)getLessons
     body:{
         courseId 
@@ -90,16 +92,95 @@ for filling the the course page what you will do is . you will call this api and
         lessons:
     }
 
-9)getCurrentLesson
- body:{
-    lessonId;
- }
- response:{
-    lesson :,
-    success 
- }
+9)getPendingRequests
+    body:{
+    //nothing
+    }
+    response:{
+        requests
+    }
 
- 10)
+ 10)updateProgress
+    body:{
+
+ 11)getProgress
+    body:{
+     courseID
+    }
+    response{
+        progress   //2d vector as discussed
+    }
+
+12)addQuiz
+    body:{
+        lessonId,  
+        title,
+        theoryQuestions,
+        theoryAnswers,
+        Mcqs,
+        McqOpts
+    }
+    response:{
+    // only message
+    }
+
+13)submitQuiz
+    body:{
+        submittedTheoryAnswers,
+        submittedMcqOpts, 
+        lessonId,    
+        lessonidx, 
+        courseId 
+    }
+    response:{
+    marks
+    }
+
+14)getQuiz
+    body:{
+        lessonID
+    }
+    response:{
+        mcqQuestions,
+        mcqOptions,
+        theoryQuestions
+    }
+
+15)addToCart
+    body:{
+        courseID
+    }
+    response:{
+        cartCourses
+    }
+
+16)removeFromCart
+    body:{
+        courseID
+    }
+    response:{
+        cartCourses
+    }
+
+17)getCartCourses
+    body:{
+        //nothing
+    }
+    response:{
+        cartCourses
+    }
+
+18)getMyCourses
+    body:{
+        //nothing
+    }
+    response:{
+        courses
+    }
+
+
+    
+
 
 
 
