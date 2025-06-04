@@ -34,19 +34,7 @@ router.post('/getDiscussion',getDiscussion);//done
 
 router.post('/addMessage',addMessage);//done
 
-
-
-
-
-
-
 router.post('/getLessons',enrollmentAccess,getLesson);// we will need the index of the lesson to the post index . //done
-
-
-
-
-
-
 
 router.post('/getProgress',getProgress);//done 
 

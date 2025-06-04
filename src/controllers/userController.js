@@ -9,7 +9,7 @@ export async function addCourse(req,res){
     try {
         const user = req.user;
         if(user.role!=="instructor"){
-            return res.status(403).json({message:"you are not allowed to add a course"});
+            return res.status(403).json({success:false,message:"you are not allowed to add a course"});
         }
         const name = req.body.name;
         const photoUrl = req.body.photoUrl;
@@ -54,9 +54,10 @@ export async function  addLesson(req,res) {
         }
         const instructor = course.instructor.toString();
         const uid = user._id.toString();
+
         console.log(user._id);
         if(uid!==instructor){
-            return res.status(403).json({message:"forbidden request you are not allowed to do this"})
+            return res.status(403).json({success:false,message:"forbidden request you are not allowed to do this"})
         }
 
         const {title,videoUrl,notesUrl,quizId,duration,description} = req.body;
@@ -80,9 +81,9 @@ export async function  addLesson(req,res) {
             lessons:lessons
         })
 
-        return res.status(200).json({message:"Lesson has been added"});
+        return res.status(200).json({success:true,message:"Lesson has been added"});
     } catch (e) {
-         return res.status(500).json({message:"internalServerError",e});
+         return res.status(500).json({success:false,message:"internalServerError",e});
     }
 }
 
@@ -91,9 +92,9 @@ export async function  addLesson(req,res) {
 export async function getAllCourses(req,res){
     try {
         const courses = await Course.find();//this is a bit problematic to be honest.
-        return res.status(200).json({message:"fetched",courses});
+        return res.status(200).json({success:true,message:"fetched",courses});
     } catch (e) {
-         return res.status(500).json({message:"internalServerError",e});
+         return res.status(500).json({success:false,message:"internalServerError",e});
     }
 }
 
@@ -123,7 +124,6 @@ export async function enroll(req,res) {
 
         const enrolledCourses = user.enrolledCourses;
         const cart = await Cart.findOne({userId:user._id});
-        const cartCourses = cart.courses;
           if (cart) {
             const cartCourses = cart.courses || [];
 
@@ -165,11 +165,11 @@ export async function getDiscussion(req,res) {
         const courseId = req.body.courseId;
         const discussions = await Discussions.findOne({courseId});
         if(!discussions){
-            return res.status(404).json({message:"course not found discusion"});
+            return res.status(404).json({success:false,message:"course not found discusion"});
         }
-        return res.status(200).json({messages:discussions.messages});
+        return res.status(200).json({success:true,messages:discussions.messages});
     } catch (e) {
-         return res.status(500).json({message:"internalServerError",e});
+         return res.status(500).json({success:false,message:"internalServerError",e});
     }
 }
 
@@ -181,7 +181,7 @@ export async function addMessage(req,res){
         const discussion = await Discussions.findOne({courseId:courseId});
 
         if(!user.enrolledCourses.includes(courseId)){
-            return res.status(403).json({message:"forbidden you are not authorised to use this course"});
+            return res.status(403).json({success:false,message:"forbidden you are not authorised to use this course"});
         }
 
         const messages = discussion.messages;
@@ -228,9 +228,9 @@ export async function getLesson(req,res){
 export async function getPendingRequests(req,res){
     try {
         const requests = await Request.find();
-        return res.status(200).json({message:"success",requests});
+        return res.status(200).json({success:true,message:"success",requests});
     } catch (e) {
-          return res.status(500).json({message:"internalServerError",e});
+          return res.status(500).json({success:false,message:"internalServerError",e});
     }
 }
 
@@ -249,7 +249,7 @@ export async function updateProgress(req, res) {
             userId: user._id, 
         });
         if (!progressBar) {
-            return res.status(404).json({ message: "Progress not found; cannot update." });
+            return res.status(404).json({ success:false,message: "Progress not found; cannot update." });
         }
         const lessonprogress = progressBar.progress;
         while (lessonprogress.length <= lessonidx) {
@@ -265,10 +265,10 @@ export async function updateProgress(req, res) {
         await UserProgress.findByIdAndUpdate(progressBar._id, {
             progress: lessonprogress
         });
-        return res.status(200).json({ message: "Progress updated successfully." });
+        return res.status(200).json({ success:true,message: "Progress updated successfully." });
     } catch (e) {
         console.error("Error updating progress:", e);
-        return res.status(500).json({ message: "Internal Server Error", error: e.message });
+        return res.status(500).json({ success:false,message: "Internal Server Error", error: e.message });
     }
 }
 
@@ -279,18 +279,18 @@ export async function getProgress(req,res){
         const courseId = req.body.courseId;
         const user = req.user;
         if(!user||!courseId){
-            return res.status(400).json({message:"baad request"});
+            return res.status(400).json({success:false,message:"baad request"});
         }
         const courseProgress = await UserProgress.findOne({
             courseId:courseId,
             userId:user._id
         });
         if(!courseProgress){
-            return res.status(404).json({message:"progress not found"});
+            return res.status(404).json({success:false,message:"progress not found"});
         }
-        return res.status(200).json({message:"success",progress:courseProgress.progress});
+        return res.status(200).json({success:true,message:"success",progress:courseProgress.progress});
     } catch (e) {
-        return res.status(500).json({message:"internalServerError",e});
+        return res.status(500).json({success:false,message:"internalServerError",e});
     }
 }   
 
@@ -305,14 +305,14 @@ export async function addQuiz(req,res){
         });
         const lesson = await Lesson.findById(lessonId);
         if(!lesson){
-            return res.status(404).json({message:"lesson does not exist"});
+            return res.status(404).json({success:false,message:"lesson does not exist"});
         }
         await Lesson.findByIdAndUpdate(lessonId,{
             quizId:newQuiz._id
         });
-        return res.status(200).json({message:"successully completed"});
+        return res.status(200).json({success:true,message:"successully completed"});
     } catch (e) {
-         return res.status(500).json({message:"internalServerError",e});
+         return res.status(500).json({success:false,message:"internalServerError",e});
     }
 }
 
@@ -325,16 +325,16 @@ export async function submitQuiz(req, res) {
 
         const lesson = await Lesson.findById(lessonId);
         if (!lesson) {
-            return res.status(404).json({ message: "Lesson not found" });
+            return res.status(404).json({success:false, message: "Lesson not found" });
         }
 
         const existingProgress = await UserProgress.findOne({ courseId, userId: user._id });
         if (!existingProgress) {
-            return res.status(404).json({ message: "User progress not found" });
+            return res.status(404).json({success:false, message: "User progress not found" });
         }
         const progress = existingProgress.progress;
         if (lessonidx < progress.length && progress[lessonidx][1] > -1) {
-            return res.status(403).json({ message: "Quiz already submitted for this lesson" });
+            return res.status(403).json({success:false, message: "Quiz already submitted for this lesson" });
         }
 
         const quizId = lesson.quizId;
@@ -373,13 +373,14 @@ export async function submitQuiz(req, res) {
         });
 
         return res.status(200).json({
+            success:true,
             message: "Quiz successfully submitted",
             marks: score
         });
 
     } catch (e) {
         console.error("Error submitting quiz:", e);
-        return res.status(500).json({ message: "Internal server error", error: e.message });
+        return res.status(500).json({success:false, message: "Internal server error", error: e.message });
     }
 }
 
@@ -389,17 +390,18 @@ export async function getQuiz(req, res) {
         const { lessonId } = req.body;
 
         if (!lessonId) {
-            return res.status(400).json({ message: "lessonId is required in the request body" });
+            return res.status(400).json({success:false, message: "lessonId is required in the request body" });
         }
         const lesson = await Lesson.findById(lessonId);
         if (!lesson) {
-            return res.status(404).json({ message: "Lesson not found" });
+            return res.status(404).json({success:false, message: "Lesson not found" });
         }
         const quiz = await Quiz.findOne({ lessonId: lessonId });
         if (!quiz) {
-            return res.status(404).json({ message: "Quiz not found for this lesson" });
+            return res.status(404).json({success:false, message: "Quiz not found for this lesson" });
         }
         return res.status(200).json({
+            success:true,
             mcqQuestions: quiz.Mcqs,
             mcqOptions: quiz.McqOpts,
             theoryQuestions: quiz.theoryQuestions
@@ -407,7 +409,7 @@ export async function getQuiz(req, res) {
 
     } catch (e) {
         console.error("Error in getQuiz:", e);
-        return res.status(500).json({ message: "Internal server error", error: e.message });
+        return res.status(500).json({ success:false,message: "Internal server error", error: e.message });
     }
 }
 
@@ -420,15 +422,15 @@ export async function addToCart(req,res) {
         const courseId = req.body.courseId;
         // const cartCourses
         if(!user||!courseId){
-            return res.status(404).json({message:"missing fields . for user or course "});
+            return res.status(404).json({success:false,message:"missing fields . for user or course "});
         }
         const cart = await Cart.findOne({userId:user._id});
         if(!cart){
-             return res.status(404).json({message:"cart inexistent this message should never occur ..."});
+             return res.status(404).json({success:false,message:"cart inexistent this message should never occur ..."});
         }
         const cartCourses = cart.courses;
         if(user.enrolledCourses.includes(courseId)){
-            return res.status(201).json({messag:"cannot add enrolled courses into cart! "})
+            return res.status(201).json({success:false,message:"cannot add enrolled courses into cart! "})
         }
         if(!cartCourses.includes(courseId)){
             cartCourses.push(courseId);
@@ -436,9 +438,9 @@ export async function addToCart(req,res) {
         await Cart.findByIdAndUpdate(cart._id,{
             courses:cartCourses
         });
-        return res.status(200).json({message:"course added to the cart ",cartCourses});
+        return res.status(200).json({success:true,message:"course added to the cart ",cartCourses});
     } catch (e) {
-        return res.status(500).json({message:"internal server error"});
+        return res.status(500).json({success:false,message:"internal server error"});
     }
 }
 
@@ -448,12 +450,12 @@ export async function removeFromCart(req, res) {
         const courseId = req.body.courseId;
 
         if (!user || !courseId) {
-            return res.status(404).json({ message: "Missing fields: user or courseId" });
+            return res.status(404).json({success:false, message: "Missing fields: user or courseId" });
         }
 
         const cart = await Cart.findOne({ userId: user._id });
         if (!cart) {
-            return res.status(404).json({ message: "Cart does not exist" });
+            return res.status(404).json({success:false, message: "Cart does not exist" });
         }
 
         const updatedCourses = cart.courses.filter(id => id.toString() !== courseId.toString());
@@ -462,9 +464,9 @@ export async function removeFromCart(req, res) {
             courses: updatedCourses
         });
 
-        return res.status(200).json({ message: "Course removed from cart", cartCourses: updatedCourses });
+        return res.status(200).json({ success:true,message: "Course removed from cart", cartCourses: updatedCourses });
     } catch (e) {
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({success:false, message: "Internal server error" });
     }
 }
 
@@ -473,18 +475,18 @@ export async function getCartCourses(req, res) {
         const user = req.user;
 
         if (!user) {
-            return res.status(404).json({ message: "Missing user information" });
+            return res.status(404).json({success:false, message: "Missing user information" });
         }
 
         const cart = await Cart.findOne({ userId: user._id });
         if (!cart) {
-            return res.status(404).json({ message: "Cart does not exist" });
+            return res.status(404).json({success:false, message: "Cart does not exist" });
         }
         const arrayOfCourses = await Course.find({_id:{$in:cart.courses}});
 
-        return res.status(200).json({ cartCourses: arrayOfCourses});
+        return res.status(200).json({success:true, cartCourses: arrayOfCourses});
     } catch (e) {
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({success:false, message: "Internal server error" });
     }
 }
 
@@ -494,13 +496,13 @@ export async function getMyCourses(req, res) {
     const user = req.user;
     const courses = await Course.find({_id:{$in:user.enrolledCourses}});
     if(!courses){
-        return res.status(404).json({message:"you donot have any current courses...",courses:[]});
+        return res.status(404).json({success:false,message:"you donot have any current courses...",courses:[]});
     }
     const filteredCourses = courses.filter(c => c !== null);
-    return res.status(200).json({ courses: filteredCourses });
+    return res.status(200).json({ success:true,courses: filteredCourses });
   } catch (e) {
     console.error("getMyCourses error:", e);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ success:false,message: "Internal Server Error" });
   }
 }
 
