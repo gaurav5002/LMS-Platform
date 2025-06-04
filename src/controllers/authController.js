@@ -210,6 +210,7 @@ export async function login(req, res) {
     }
 
     const user = await User.findOne({ email });
+
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found.' });
     }
