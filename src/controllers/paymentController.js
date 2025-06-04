@@ -3,8 +3,9 @@ import crypto from "crypto";
 import Payment from "../models/payment.js"
 import User from "../models/user.js"
 import { Course } from "../models/Course.js";
-import Cart from "../models/Cart.js";
+
 import dotenv from 'dotenv'
+import Cart from "../models/Cart.js";
 dotenv.config();
 
 const razorpay = new Razorpay({
@@ -76,20 +77,20 @@ export const verifyPaymentAndEnroll = async (req, res) => {
     if(!user){
       return res.status(404).json({message:"user not found ",success:false});
     }
-    const cart = await Cart.findOne({userId:user._id});
-            if(!cart){
-                 return res.status(404).json({success:false,message:"cart inexistent this message should never occur ..."});
+     const cart = await Cart.findOne({userId:user._id});
+     
+          if (cart) {
+            const cartCourses = cart.courses || [];
+
+            const index = cartCourses.indexOf(courseId);
+            if (index !== -1) {
+                cartCourses.splice(index, 1); // remove the course
+                await Cart.findByIdAndUpdate(cart._id,{
+                     courses: cartCourses 
+                })
             }
-            const cartCourses = cart.courses;
-            if(user.enrolledCourses.includes(courseId)){
-                return res.status(201).json({success:false,message:"cannot add enrolled courses into cart! "})
-            }
-            if(!cartCourses.includes(courseId)){
-                cartCourses.push(courseId);
-            }
-            await Cart.findByIdAndUpdate(cart._id,{
-                courses:cartCourses
-            });
+        }
+
     
     const enrolledCourses = user.enrolledCourses;
     await User.findByIdAndUpdate(userId,{
