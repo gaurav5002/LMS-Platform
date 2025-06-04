@@ -346,4 +346,15 @@ new course
 }
 
 
-quiz added to the lesson 683ff274559a01462930d0d0
+quiz added to the lesson 683ff274559a01462930d0d0 
+
+{
+  "submittedTheoryAnswers": [
+    "A directed graph has edges with direction, while an undirected graph has bidirectional edges.",
+    "An adjacency list is a collection of lists used to represent which nodes are adjacent to others in a graph."
+  ],
+  "submittedMcqOpts": [2, 2],
+  "lessonId": "683ff274559a01462930d0d0",
+  "lessonidx": 0,
+  "courseId": "683ff206559a01462930d0c9"
+}

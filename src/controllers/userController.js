@@ -35,9 +35,9 @@ export async function addCourse(req,res){
 
         await Discussions.create({courseId:newCourse._id});
 
-        return res.json({message:"course created succesfully ",newCourse});
+        return res.json({success:true,message:"course created succesfully ",newCourse});
     } catch (e) {
-        return res.status(500).json({message:"internalServerError",e});
+        return res.status(500).json({success:false,message:"internalServerError",e});
     }
 }
 
@@ -102,12 +102,12 @@ export async function getCurrentCourse(req,res){
     try {
         const course = await Course.findById(req.body.courseId);
         if(!course){
-            return res.json(404).json({message:"course not found "});
+            return res.json(404).json({success:false,message:"course not found "});
         }
-        return res.status(200).json({message:"course Fetched",course});
+        return res.status(200).json({success:true,message:"course Fetched",course});
 
     } catch (e) {
-        return res.status(500).json({message:"internalServerError",e});
+        return res.status(500).json({success:false,message:"internalServerError",e});
     }
 }
 
@@ -118,7 +118,7 @@ export async function enroll(req,res) {
         const course = await Course.findById(courseId);
 
         if(!course){
-            return res.status(404).json({message:"course not found money will be given Refunded as soon as Possible Sorry for inconvinience"});
+            return res.status(404).json({message:"course not found money will be  Refunded as soon as Possible Sorry for inconvinience"});
         }
 
         const enrolledCourses = user.enrolledCourses;
@@ -152,11 +152,11 @@ export async function enroll(req,res) {
             enrolledCourses:enrolledCourses
         });
 
-        return res.status(200).json({message:"enrollment success"});
+        return res.status(200).json({success:true,message:"enrollment success"});
 
 
     } catch (e) {
-        return res.status(500).json({message:"internalServerError",e});
+        return res.status(500).json({success:false,message:"internalServerError",e});
     }
 }
 
@@ -197,10 +197,10 @@ export async function addMessage(req,res){
             messages:messages
         });
 
-        return res.status(200).json({message:"message has been added"});
+        return res.status(200).json({success:true,message:"message has been added"});
 
     } catch (e) {
-        return res.status(500).json({message:"internalServerError",e});
+        return res.status(500).json({success:true,message:"internalServerError",e});
     }
 }
 
@@ -210,18 +210,18 @@ export async function getLesson(req,res){
         const courseId = req.body.courseId;
         const course = await Course.findById(courseId);
         if(!course){
-            return res.status(404).json({message:"course not found"});
+            return res.status(404).json({success:false,message:"course not found"});
         }
         const lessons = course.lessons;
         if(!lessons||lessons.length<1){
-            return res.status(204).json({lessons:[]});
+            return res.status(204).json({success:true,lessons:[]});
         }
         if(!req.isenrolled){
-            return res.status(201).json({lessons:lessons[0]});
+            return res.status(201).json({success:true,lessons:lessons[0]});
         }
-        return res.status(200).json({lessons:lessons});
+        return res.status(200).json({success:true,lessons:lessons});
     } catch (e) {
-        return res.status(500).json({message:"internalServerError",e});
+        return res.status(500).json({success:false,message:"internalServerError",e});
     }
 }
 
@@ -256,6 +256,11 @@ export async function updateProgress(req, res) {
             lessonprogress.push([0, -1, 0]);
         }
         const updated = lessonprogress[lessonidx].map((val, idx) => val + progressVector[idx]);
+
+        updated[0] = Math.min(1, Math.max(0, updated[0]));
+        updated[2] = Math.min(1, Math.max(0, updated[2]));
+
+
         lessonprogress[lessonidx] = updated;
         await UserProgress.findByIdAndUpdate(progressBar._id, {
             progress: lessonprogress
