@@ -77,7 +77,7 @@ then you must reddirect him to another page saying enter otp newPassword then hi
          success: true, message: 'OTP sent.'//if the success is false then show him the message . 
     }
 
-6)changepassword
+6)changePassword
     body:{
         email,otp,newPassword
     }
@@ -192,3 +192,45 @@ the client id given below is a working client id which will be shifted to the en
 
 
 
+
+
+
+
+admin 
+
+{
+  "name": "gourav",
+  "email": "gourav@112123.com",
+  "role": "admin",
+  "password": "mokshu",
+  "otp":"498358",
+  "newPassword":"mokshu",
+  "resumeUrl":"johncena",
+  "idProofUrl":"johncena "
+}
+
+
+instructor 
+
+{
+    "success": true,
+    "message": "Logged in.",
+    "user": {
+        "id": "683fb65e407bde2eded9c967",
+        "name": "gourav",
+        "email": "gourav@11212.com",
+        "role": "instructor"
+    }
+}
+
+
+{
+  "name": "gourav",
+  "email": "gourav@1121234.com",
+  "role": "admin",
+  "password": "mokshu",
+  "otp":"498358",
+  "newPassword":"mokshu",
+  "resumeUrl":"johncena",
+  "idProofUrl":"johncena "
+}

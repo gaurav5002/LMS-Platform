@@ -48,7 +48,8 @@ async function sendEmail(to, { subject, text, html }) {
 
 export async function register(req, res) {
   try {
-    const { name, email, password, role = 'user' } = req.body;
+    const { name, email, password } = req.body;
+    const role = 'user';
     if (!name || !email || !password) {
       return res.status(400).json({ success: false, message: 'Please fill all fields.' });
     }
@@ -316,7 +317,8 @@ export async function resetPassword(req, res) {
 
 export async function RegisterInstructor(req, res) {
   try {
-    const { name, email, password, role = 'instructor',resumeUrl,idProofUrl } = req.body;
+    const { name, email, password,resumeUrl,idProofUrl } = req.body;
+    const role = "instructor";
     if (!name || !email || !password) {
       return res.status(400).json({ success: false, message: 'Please fill all fields.' });
     }
@@ -326,7 +328,7 @@ export async function RegisterInstructor(req, res) {
     }
 
     const hashed = await bcrypt.hash(password, 10);
-    const newUser = await User.create({ name, email, password: hashed, role, isVerified: false });
+    const newUser = await User.create({ name, email, password: hashed, role, isVerified:false });
 
     await PendingRequests.create({instructorId:newUser._id,resumeUrl,idProofUrl});
 
@@ -363,7 +365,7 @@ export async function verifyInstructor(req, res) {
 
     const { instructorId } = req.body;
 
-    await PendingRequests.deleteOne({instructorId});
+    await PendingRequests.deleteMany({instructorId});
 
     if (!mongoose.Types.ObjectId.isValid(instructorId)) {
       return res.status(400).json({ message: 'Invalid instructor ID' });
