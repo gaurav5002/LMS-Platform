@@ -10,8 +10,9 @@ const useAuthStore = create((set) => ({
     try {
       set({ loading: true });
       const { data } = await getCurrentUser();
+      console.log(data)
       set({ 
-        user: data?.success ? data.user : null,
+        user: (data.success && data.user.isVerified) ? data.user : null,
         loading: false,
         initialCheckDone: true 
       });

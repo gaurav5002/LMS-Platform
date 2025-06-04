@@ -22,7 +22,7 @@ const VerifyEmail = () => {
       const { data } = await verifyEmail(email, otp);
       if (data.success) {
         setSuccess(true);
-        setTimeout(() => navigate(from), 2000);
+        setTimeout(() => navigate(from), 1000);
       }
     } catch (err) {
       setError(err.message || 'Verification failed');

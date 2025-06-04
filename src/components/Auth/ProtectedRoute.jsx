@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation, Outlet } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 
-const ProtectedRoute = ({ children, roles }) => {
+const ProtectedRoute = ({ roles }) => {
   const { user, loading, initialCheckDone, initialize } = useAuthStore();
   const location = useLocation();
 
@@ -21,14 +21,14 @@ const ProtectedRoute = ({ children, roles }) => {
   }
 
   if (!user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/register" state={{ from: location }} replace />;
   }
 
   if (roles && !roles.includes(user.role)) {
     return <Navigate to="/unauthorized" replace />;
   }
 
-  return children;
+  return <Outlet />;
 };
 
 export default ProtectedRoute;

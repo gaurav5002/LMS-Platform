@@ -4,7 +4,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import LearnHubLogo from '../../components/Common/LearnHubLogo';
 import useAuthStore from '../../store/authStore';
-import { loginUser, googleLogin } from '../../api/auth';
+import { loginUser, googleLogin, sendOtp} from '../../api/auth';
 
 // Placeholder Loader component (replace if you have a real one)
 const Loader = ({ className, size }) => (
@@ -59,8 +59,16 @@ const LoginPage = () => {
 
     try {
       const { data } = await loginUser(formData);
-      if (data.success) {
+      if (data.success && data.user.isVerified) {
         login(data.user);
+      }
+      if(data.success && !data.user.isVerified){
+        const email = data.user.email;
+        sendOtp(email);
+        navigate('/verify-email', { state: { email: data.user.email } });
+      }
+      if(!data.success){
+        setError(data.message);
       }
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Invalid credentials');

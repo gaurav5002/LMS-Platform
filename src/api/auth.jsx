@@ -17,21 +17,7 @@ axiosInstance.interceptors.request.use(
 );
 
 // Response interceptor
-axiosInstance.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      window.location.href = '/login';
-    } else if (error.response?.status === 403) {
-      window.location.href = '/unauthorized';
-    }
-    return Promise.reject(
-      error.response?.data?.message || 
-      error.message || 
-      'Request failed'
-    );
-  }
-);
+
 
 // API methods
 export const registerUser = (userData) => axiosInstance.post('/signup', userData);

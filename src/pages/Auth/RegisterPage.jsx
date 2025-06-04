@@ -27,8 +27,9 @@ const RegisterPage = () => {
     setLoading(true);
 
     try {
+      
       const response = await registerUser(formData);
-      if (response.success) {
+      if (response.data.success) {
         navigate('/verify-email', { state: { email: formData.email } });
       }
     } catch (err) {
