@@ -146,7 +146,7 @@ export async function enroll(req,res) {
 export async function getDiscussion(req,res) {
     try {
         const courseId = req.body.courseId;
-        const discussions = Discussions.findOne({courseId});
+        const discussions = await Discussions.findOne({courseId});
         if(!discussions){
             return res.status(404).json({message:"course not found discusion"});
         }
@@ -405,6 +405,9 @@ export async function addToCart(req,res) {
              return res.status(404).json({message:"cart inexistent this message should never occur ..."});
         }
         const cartCourses = cart.courses;
+        if(user.enrolledCourses.includes(courseId)){
+            return res.status(201).json({messag:"cannot add enrolled courses into cart! "})
+        }
         if(!cartCourses.includes(courseId)){
             cartCourses.push(courseId);
         }

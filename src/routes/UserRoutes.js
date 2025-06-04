@@ -8,15 +8,15 @@ router.use(protectRoute);
 
 
 //
-router.post("/addCourse",instructorAccess,addCourse);
+router.post("/addCourse",instructorAccess,addCourse);//done
 
 
 
-router.post('/addLesson',instructorAccess,addLesson);
+router.post('/addLesson',instructorAccess,addLesson);//done
 
 
 
-router.post('/getAllCourses',getAllCourses);
+router.post('/getAllCourses',getAllCourses);//done
 
 
 
@@ -24,15 +24,15 @@ router.post('/enrollInCourse',enroll);//we will have to add the payment middle w
 
 
 
-router.post('/getCurrentCourse',getCurrentCourse);
+router.post('/getCurrentCourse',getCurrentCourse);//done
 
 
 
-router.post('/getDiscussion',getDiscussion);
+router.post('/getDiscussion',getDiscussion);//done
 
 
 
-router.post('/addMessage',addMessage);
+router.post('/addMessage',addMessage);//done
 
 
 
@@ -40,7 +40,7 @@ router.post('/getPendingRequests',adminaccess,getPendingRequests);
 
 
 
-router.post('/getLessons',enrollmentAccess,getLesson);// we will need the index of the lesson to the post index . 
+router.post('/getLessons',enrollmentAccess,getLesson);// we will need the index of the lesson to the post index . //done
 
 
 
@@ -58,11 +58,11 @@ router.post('/addToCart',addToCart);
 
 router.post('/removeFromCart',removeFromCart);
 
-router.post('/getCartCourses',getCartCourses);
+router.post('/getCartCourses',getCartCourses);//done 
 
 router.post('/getQuiz',getQuiz);
 
-router.post('/getMyCourses',getMyCourses);
+router.post('/getMyCourses',getMyCourses);//done
 
 
 
