@@ -3,7 +3,8 @@ import { Search, X } from 'lucide-react';
 import CourseCard from './CourseCard';
 
 const CourseGrid = ({ courses }) => {
-
+  console.log(courses)
+  //console.log(courses[0]._id);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
@@ -14,7 +15,10 @@ const CourseGrid = ({ courses }) => {
     }
 
     return courses.filter(course =>
-      course.topic?.toLowerCase().includes(searchQuery.toLowerCase())
+      course.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.skills?.some(skill =>
+        skill.toLowerCase().includes(searchQuery.toLowerCase())
+      )
     );
   }, [searchQuery, courses]);
 
@@ -116,18 +120,15 @@ const CourseGrid = ({ courses }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {filteredCourses.map((course, index) => (
               <CourseCard
-                key={course.id || index}
-                id={course.id}
+                key={course._id || index}
+                id={course._id}
                 image={course.image}
-                topic={course.topic}
-                hours={course.hours}
+                topic={course.name}
                 description={course.description}
-                rating={course.rating}
                 lessons={course.lessons}
                 price={course.price}
                 tutor={course.tutor}
                 skills={course.skills}
-                progress={course.progress}
               />
             ))}
           </div>

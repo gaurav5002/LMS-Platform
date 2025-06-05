@@ -9,7 +9,7 @@ const Browse = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const user = useAuthStore((state) => state.user);
   console.log(user);
-  let unEnrolledCourses = []
+  const [unEnrolledCourses,setUnEnrolledCourses]=useState([])
   const [loading, setLoading] = useState(true);
 
   const fetchCourses = async () => {
@@ -24,11 +24,12 @@ const Browse = () => {
       );
 
       const enrolledCourses = user?.courses || [];
-
-      unEnrolledCourses = response.data.courses.filter(
+      //console.log(unEnrolledCourses)
+      const res = response.data.courses.filter(
         course => !enrolledCourses.includes(course._id)
       );
-      //console.log(unEnrolledCourses)
+      setUnEnrolledCourses(res);
+      console.log(unEnrolledCourses)
 
     } catch (error) {
       console.error("Failed to fetch courses", error);
