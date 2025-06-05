@@ -6,16 +6,15 @@ import axios from "axios";
 import useAuthStore from '../../zustand/authStore';
 
 const Browse = () => {
-  const token = localStorage.getItem('authToken');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const user = useAuthStore((state) => state.user);
+    const user = useAuthStore((state) => state.user);
   console.log(user);
   let unEnrolledCourses = []
   const [loading, setLoading] = useState(true);
 
   const fetchCourses = async () => {
     try {
-      console.log(token);
+      
       const response = await axios.post(
         `${import.meta.env.VITE_API_USER_URL}/getAllCourses`,
         {},

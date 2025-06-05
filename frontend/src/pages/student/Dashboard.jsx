@@ -5,7 +5,7 @@ import axios from "axios";
 import useAuthStore from '../../zustand/authStore';
 
 
-const Browse = () => {
+const Dashboard = () => {
 
   const user = useAuthStore((state) => state.user);
   console.log("here in dashboard",user)
@@ -84,4 +84,4 @@ const Browse = () => {
   );
 };
 
-export default Browse;
+export default Dashboard;
