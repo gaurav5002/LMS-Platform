@@ -63,6 +63,7 @@ router.post('/submitQuiz',submitQuiz);//done
 
 router.post('/getPendingRequests',adminaccess,getPendingRequests);
 
+router.post('/getMyIncome',getMyIncome);
 
 
 

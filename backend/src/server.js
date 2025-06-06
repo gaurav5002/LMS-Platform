@@ -18,16 +18,34 @@ app.use(express.urlencoded({ extended: true })); // if you ever post form data
 app.use(cookieParser());
 
 app.use(cors({
-  origin: 'http://localhost:5174',  // allow your front-end
-  credentials: true,                // enable Set-Cookie and Cookie headers
+  origin: 'http://localhost:5173',
+  credentials: true,                
   methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
   allowedHeaders: ['Content-Type','Authorization','X-Requested-With']
 }));
+
+app.use((req, res, next) => {
+  res.setHeader("Content-Security-Policy",
+  "default-src 'self'; " +
+  "script-src 'self'; " +
+  "style-src 'self'; " +
+  "img-src 'self'; " +
+  "font-src 'self'; " +
+  "object-src 'none'; " +
+  "frame-ancestors 'none'; " +
+  "base-uri 'self'; " +
+  "form-action 'self'; " +
+  "upgrade-insecure-requests;"
+);
+
+  next();
+});
 
 app.use("/api/auth",authRoutes);
 app.use("/api/users",userRoutes);
 app.use("/api/fileUpload",uploadRoutes);
 app.use("/api/payments",paymentRoutes);//for initial stages lets just have verify payment and enroll thing . not anything else . 
+// app.use("api")
 
 dbConnect();
 const PORT = process.env.PORT || 5002;

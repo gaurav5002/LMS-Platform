@@ -506,5 +506,21 @@ export async function getMyCourses(req, res) {
   }
 }
 
+export async function getMyIncome(req,res){
+    try {
+        const user = req.user;
+        const courseId = req.body.courseId;
+        const number = await UserProgress.countDocuments({courseId});
+        const course = await Course.findById(courseId);
+        if(!course){
+            return res.status(404).json({message:"COursse not found ",income:-1});
+        }
+        const price =  course.price;
+        const income = price*number;
+        return res.status(200).json({message:"succesfully fetched",income:income});
+    } catch (e) {
+         return res.status(500).json({ success:false,message: "Internal Server Error" });
+    }
+}
 
 
