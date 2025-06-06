@@ -506,21 +506,49 @@ export async function getMyCourses(req, res) {
   }
 }
 
-export async function getMyIncome(req,res){
+export async function getCourseIncome(req,res){
     try {
         const user = req.user;
-        const courseId = req.body.courseId;
-        const number = await UserProgress.countDocuments({courseId});
-        const course = await Course.findById(courseId);
-        if(!course){
-            return res.status(404).json({message:"COursse not found ",income:-1});
+        const courseId = req.body.courseId;;
+        if(!user.enrolledCourses.includes(courseId)){
+            return res.status(400).json({message:"this is wrong man you cant have income on courses you dont own"});
         }
-        const price =  course.price;
-        const income = price*number;
-        return res.status(200).json({message:"succesfully fetched",income:income});
+        const course = await Course.findById(courseId);
+        const price = course.price;
+        const students = course.totalEnrolledStudents;
+        const income = price*students;
+        res.status(200).json({
+            message:"fetched correctly",
+            success:true,
+            income:income,
+            students
+        });
     } catch (e) {
          return res.status(500).json({ success:false,message: "Internal Server Error" });
     }
 }
+
+export async function getTotalIncome(req,res){
+    try {
+        const user = req.user;
+        const courses = await Course.find({_id:{$in:user.enrolledCourses}});
+        if(!courses){
+            return res.status(404).json({success:false,message:"no income found "});
+        }
+        let income = 0 ;
+        for(let i =0;i<courses.length;i++){
+            income += courses[i].price*courses[i].totalEnrolledStudents;
+        }
+          res.status(200).json({
+            message:"fetched correctly",
+            success:true,
+            income:income,
+        });
+    } catch (e) {
+         return res.status(500).json({ success:false,message: "Internal Server Error" });
+    }
+}
+
+
 
 
