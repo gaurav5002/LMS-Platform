@@ -5,6 +5,7 @@ import { GoogleLogin } from '@react-oauth/google';
 import LearnHubLogo from '../../components/Common/LearnHubLogo';
 import useAuthStore from '../../zustand/authStore';
 import { loginUser, googleLogin, sendOtp} from '../../api/auth';
+import toast from 'react-hot-toast';
 
 // Placeholder Loader component (replace if you have a real one)
 const Loader = ({ className, size }) => (
@@ -43,6 +44,7 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (user) {
+      toast.success(`Already Logged in`)
       navigate('/dashboard');
     }
   }, [user, navigate, location.state?.from]);
@@ -61,6 +63,7 @@ const LoginPage = () => {
       const { data } = await loginUser(formData);
       if (data.success && data.user.isVerified) {
         console.log("hiii");
+        toast.success(`Welcome back ${data.user.name}`)
         login(data.user);
       }
       if(data.success && !data.user.isVerified){
@@ -100,7 +103,7 @@ const LoginPage = () => {
       <div className="flex w-full max-w-5xl h-[90vh] rounded-xl shadow-lg overflow-hidden bg-white">
         <div className="w-1/2 h-full hidden md:flex items-center justify-center bg-white-100">
           <img
-            src="/abc.webp"
+            src="/logo.jpg"
             alt="Illustration showing login concept"
             className="object-contain w-full h-full max-h-full"
           />

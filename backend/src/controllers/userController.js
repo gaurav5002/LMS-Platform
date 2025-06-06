@@ -200,6 +200,7 @@ export async function addMessage(req,res){
         return res.status(200).json({success:true,message:"message has been added"});
 
     } catch (e) {
+        
         return res.status(500).json({success:true,message:"internalServerError",e});
     }
 }

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { verifyEmail } from '../../api/auth';
 import useAuthStore from '../../zustand/authStore';
+import toast from 'react-hot-toast';
 
 const Verifymail = () => {
 
@@ -29,6 +30,7 @@ const Verifymail = () => {
         console.log("hii");
         initialize();
         setSuccess(true);
+        toast(`Welcome ${data.email}`)
         navigate('/dashboard');
         // setTimeout(() => navigate('/dashboard'), 1000);
       }

@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true })); // if you ever post form data
 app.use(cookieParser());
 
 app.use(cors({
-  origin: 'http://localhost:5174',  // allow your front-end
+  origin: 'http://localhost:5173',  // allow your front-end
   credentials: true,                // enable Set-Cookie and Cookie headers
   methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
   allowedHeaders: ['Content-Type','Authorization','X-Requested-With']

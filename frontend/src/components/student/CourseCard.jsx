@@ -1,6 +1,7 @@
 import { ChevronRight } from "lucide-react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import useCourseStore from "../../zustand/currentCourse"
 
 const CourseCard = ({
   id,
@@ -15,9 +16,23 @@ const CourseCard = ({
   skills = [],
   progress = -1,
 }) => {
+  const setSelectedCourse = useCourseStore((state) => state.setSelectedCourse);
   const navigate = useNavigate();
-  console.log(id);
+  //console.log(id);
   const handleClick = () => {
+    setSelectedCourse({
+      id,
+      image,
+      topic,
+      hours,
+      description,
+      rating,
+      lessons,
+      price,
+      tutor,
+      skills,
+      progress,
+    });
     navigate(`/course/${id}`);
   };
 

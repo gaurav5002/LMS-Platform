@@ -30,7 +30,7 @@ const RegisterPage = () => {
       
       const response = await registerUser(formData);
       if (response.data.success) {
-        navigate('/verify-email', { state: { email: formData.email } });
+        navigate('/verify-email', { state: { email: formData.email,name:formData.name } });
       }
     } catch (err) {
       setError(err.message || 'An error occurred');
@@ -48,7 +48,7 @@ const RegisterPage = () => {
       <div className="flex w-full max-w-5xl h-[90vh] rounded-xl shadow-lg overflow-hidden bg-white">
         <div className="w-1/2 h-full hidden md:flex items-center justify-center bg-white-100">
           <img
-            src="/abc.webp"
+            src="/logo.jpg"
             alt="Register Visual"
             className="object-contain w-full h-full max-h-full"
           />
