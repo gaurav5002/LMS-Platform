@@ -1,6 +1,6 @@
 import express from "express";
 import { protectRoute,adminaccess,instructorAccess,enrollmentAccess } from "../middleWare/authMiddleWare/protectRoute.js";
-import { addCourse, addLesson, addMessage, addQuiz, addToCart, enroll, getAllCourses, getCartCourses, getCourseIncome, getCurrentCourse, getDiscussion, getLesson, getMyCourses, getPendingRequests, getProgress, getQuiz, removeFromCart, submitQuiz, updateProgress } from "../controllers/userController.js";
+import { addCourse, addLesson, addMessage, addQuiz, addToCart, enroll, getAllCourses, getCartCourses, getCourseIncome, getCurrentCourse, getDiscussion, getLesson, getMyCourses, getPendingRequests, getProgress, getQuiz, getTotalIncome, removeFromCart, submitQuiz, updateProgress } from "../controllers/userController.js";
 
 //we will be using payment middle ware later on ... 
 const router = express.Router();
