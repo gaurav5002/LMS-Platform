@@ -1,393 +1,408 @@
-import React, { useEffect, useState } from 'react';
-import { Play, FileText, HelpCircle, ChevronDown, ChevronRight, ArrowLeft, Check, Lock } from 'lucide-react';
-import ContentViewer from '../../components/student/ContentViewer';
-import { useParams, useNavigate } from 'react-router';
-import axios from 'axios';
-import useCourseStore from "../../zustand/currentCourse";
-import { useProgressStore } from '../../zustand/progressStore';
-import useAuthStore from '../../zustand/authStore';
+
+import React, { useState, useEffect } from 'react'
+import { Menu, X, Play, FileText, HelpCircle, ChevronDown, ChevronRight, Lock, ArrowLeft } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import ContentViewer from '../../components/student/ContentViewer' // Import the ContentViewer component
+import { useNavigate, useParams } from 'react-router'
+import axios from 'axios'
+import useCourseStore from '../../zustand/currentCourse'
+import useAuthStore from '../../zustand/authStore'
 
 const ViewCourseContent = () => {
-    const navigate = useNavigate();
-    const { id } = useParams();
-    const course = useCourseStore((state) => state.selectedCourse);
-    const { user } = useAuthStore();
-    console.log(user, course.id);
+  const navigate = useNavigate();
+  const [expandedLessons, setExpandedLessons] = useState({})
+  const [lessons, setLessons] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [selectedContent, setSelectedContent] = useState(null)
+  const [isEnrolled, setIsEnrolled] = useState(false)
+  const course = useCourseStore((state) => state.selectedCourse);
+  const { user } = useAuthStore();
 
-    const {
-        progress,
-        fetchProgress,
-        updateProgress,
-        loading: progressLoading
-    } = useProgressStore();
+  // Check if user is enrolled in the current course
+  const checkEnrollmentStatus = () => {
+    if (!user?.enrolledCourses || !course?.id) {
+      setIsEnrolled(false)
+      return
+    }
+    
+    const enrolled = user.enrolledCourses.some(enrolledCourse => 
+      enrolledCourse.id === course.id || enrolledCourse.courseId === course.id
+    )
+    setIsEnrolled(enrolled)
+  }
 
-    const [expandedLessons, setExpandedLessons] = useState({});
-    const [lessons, setLessons] = useState([]);
-    const [selectedContent, setSelectedContent] = useState({
-        type: null,
-        item: null,
-        title: null
-    });
-    const [accessLevel, setAccessLevel] = useState('none'); // 'none', 'preview', 'full'
-    const [loading, setLoading] = useState(true);
+  // Fetch lessons from API
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!course?.id) return;
+      setLoading(true);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            if (!course?.id) return;
-            setLoading(true);
-
-            try {
-                const response = await axios.post(
-                    `${import.meta.env.VITE_API_USER_URL}/getLessons`,
-                    { courseId: course.id },
-                    {
-                        withCredentials: true // ✅ THIS IS CRUCIAL
-                    }
-                );
-
-                // Handle different response cases based on backend
-                if (response.status === 201) {
-                    // Preview mode (only first lesson)
-                    setAccessLevel('preview');
-                    setLessons([response.data.lessons]);
-                } else if (response.status === 200) {
-                    // Full access
-                    setAccessLevel('full');
-                    setLessons(response.data.lessons);
-                } else if (response.status === 204) {
-                    // No lessons available
-                    setAccessLevel('none');
-                    setLessons([]);
-                }
-                console.log(lessons)
-
-                // Only fetch progress if user has full access
-                if (response.status === 200) {
-                    await fetchProgress(course.id);
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-                if (error.response?.status === 403) {
-                    // Course not published
-                    navigate('/courses');
-                }
-            } finally {
-                setLoading(false);
+      try {
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_USER_URL}/getCurrentCourse`,
+          { courseId: course.id },
+          { withCredentials: true }
+        );
+        console.log(response);
+        
+        // Handle different response cases based on backend
+        if (response.status == 200) {
+          console.log("Here");
+          
+          // Preview mode - ensure we have an array of lessons
+          const lessonsData = Array.isArray(response.data.arrayOfLessons) 
+            ? response.data.arrayOfLessons 
+            : [response.data.arrayOfLessons];
+          
+          // Check enrollment status
+          checkEnrollmentStatus();
+          
+          // If not enrolled, only show first lesson
+          const filteredLessons = isEnrolled ? lessonsData : lessonsData.slice(0, 1);
+          setLessons(filteredLessons);
+          
+          if (filteredLessons.length > 0 && filteredLessons[0]) {
+            const firstLesson = filteredLessons[0];
+            const firstContent = firstLesson.video || firstLesson.quiz || firstLesson.file;
+            if (firstContent) {
+              setSelectedContent({
+                type: firstLesson.video ? 'video' : 
+                      firstLesson.quiz ? 'quiz' : 'file',
+                data: firstContent.path,
+                title: firstContent.title
+              });
             }
-        };
-
-        fetchData();
-    }, [course?.id, user.token]);
-
-    const toggleLessonExpansion = (lessonId) => {
-        setExpandedLessons(prev => ({
-            ...prev,
-            [lessonId]: !prev[lessonId]
-        }));
-    };
-
-    const handleContentSelect = (type, content) => {
-        if (!content) return;
-
-        // Only update progress if user has full access
-        if (accessLevel === 'full') {
-            const progressVector = type === 'video' ? [0.1, 0, 0] :
-                type === 'quiz' ? [0, 0, 0] :
-                    [0, 0, 0.1];
-
-            const lessonIdx = lessons.findIndex(l => l.id === content.lessonId);
-            if (lessonIdx >= 0) {
-                updateProgress(course.id, lessonIdx, progressVector);
-            }
+          }
+        } else if (response.status === 200) {
+          // Full access
+          checkEnrollmentStatus();
+          const filteredLessons = isEnrolled ? response.data.lessons : response.data.lessons.slice(0, 1);
+          setLessons(filteredLessons);
+          
+        } else if (response.status === 204) {
+          // No lessons available
+          setLessons([]);
         }
-
-        setSelectedContent({
-            type,
-            item: content.path,
-            title: content.title
-        });
-    };
-
-    const markLessonCompleted = async (lessonId) => {
-        if (accessLevel !== 'full') return;
-
-        const lessonIdx = lessons.findIndex(l => l.id === lessonId);
-        if (lessonIdx >= 0) {
-            await updateProgress(course.id, lessonIdx, [1, 1, 1]);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        if (error.response?.status === 403) {
+          navigate('/courses');
         }
+      } finally {
+        setLoading(false);
+      }
     };
+    
+    fetchData();
+  }, [course?.id, user.token]);
 
-    const getContentIcon = (type) => {
-        const icons = {
-            video: <Play size={14} className="text-blue-500" />,
-            file: <FileText size={14} className="text-red-500" />,
-            quiz: <HelpCircle size={14} className="text-green-500" />
-        };
-        return icons[type] || null;
-    };
+  // Update lessons when enrollment status changes
+  useEffect(() => {
+    checkEnrollmentStatus();
+  }, [user?.enrolledCourses, course?.id]);
 
-    const getLessonProgress = (lessonIdx) => {
-        return progress[course.id]?.[lessonIdx] || [0, -1, 0];
-    };
+  console.log(lessons)
 
-    const isLessonCompleted = (lessonIdx) => {
-        const [video, quiz, file] = getLessonProgress(lessonIdx);
-        return video === 1 && (quiz === -1 || quiz === 1) && file === 1;
-    };
+  const handleBackButton = () =>{
+    console.log("here in button");
+    navigate(`/course/${course.id}`)
+  }
 
-    const LessonItem = ({ type, content, selected, progress, locked = false }) => {
-        if (!content) return null;
+  // Fixed toggleLessonExpansion function
+  const toggleLessonExpansion = (lessonId) => {
+    setExpandedLessons(prev => ({
+      ...prev,
+      [lessonId]: !prev[lessonId]
+    }))
+  }
 
-        return (
-            <div
-                className={`flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg transition-all duration-200 text-xs sm:text-sm ${
-                    locked ? 'text-gray-400 cursor-not-allowed bg-gray-50' :
-                        selected ? 'bg-blue-50 border border-blue-200 cursor-pointer shadow-sm' :
-                            'hover:bg-gray-50 cursor-pointer hover:shadow-sm'
-                }`}
-                onClick={() => !locked && handleContentSelect(type, content)}
-            >
-                <div className="flex-shrink-0">
-                    {locked ? <Lock size={12} className="sm:w-[14px] sm:h-[14px] text-gray-400" /> : getContentIcon(type)}
-                </div>
-                <span className="flex-1 font-medium truncate" style={{ color: locked ? '#9CA3AF' : '#2E4057' }}>
-                    {content.title}
-                </span>
-                {!locked && progress === 1 && <Check size={12} className="sm:w-[14px] sm:h-[14px] text-green-500 flex-shrink-0" />}
-            </div>
-        );
-    };
+  // Fixed handleContentClick function to pass the correct object structure
+  const handleContentClick = (item, type, title) => {
+    setSelectedContent({
+      type: type,
+      data: item,
+      title: title
+    })
+  }
 
-    const LessonCard = ({ lesson, index }) => {
-        const [videoProgress, quizProgress, fileProgress] = accessLevel === 'full' ? getLessonProgress(index) : [0, -1, 0];
-        const completed = accessLevel === 'full' ? isLessonCompleted(index) : false;
-        const isExpanded = expandedLessons[lesson.id];
-        const isLocked = accessLevel === 'preview' && index > 0;
+  const getContentIcon = (type) => {
+    switch (type) {
+      case 'video':
+        return <Play size={14} className="text-blue-500" />
+      case 'pdf':
+      case 'file':
+        return <FileText size={14} className="text-red-500" />
+      case 'quiz':
+        return <HelpCircle size={14} className="text-green-500" />
+      default:
+        return null
+    }
+  }
 
-        return (
-            <div className="border rounded-xl overflow-hidden shadow-sm transition-all duration-200 hover:shadow-md" style={{
-                backgroundColor: isLocked ? '#F9FAFB' : '#FFFFFF',
-                borderColor: completed ? '#10B981' : isLocked ? '#E5E7EB' : '#E5E7EB'
-            }}>
-                {/* Lesson Header */}
-                <div
-                    className={`p-3 sm:p-4 transition-all duration-200 ${
-                        isLocked ? 'cursor-not-allowed' : 'cursor-pointer hover:bg-gray-50'
-                    }`}
-                    onClick={() => !isLocked && toggleLessonExpansion(lesson.id)}
-                >
-                    <div className="flex items-center justify-between">
-                        <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 sm:gap-3 mb-2">
-                                <span className="text-sm sm:text-base font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                                    Lesson {index + 1}
-                                </span>
-                                {isLocked && <Lock size={14} className="sm:w-4 sm:h-4 text-gray-400 flex-shrink-0" />}
-                                {completed && <Check size={16} className="sm:w-[18px] sm:h-[18px] text-green-600 flex-shrink-0" />}
-                                {!isLocked && (
-                                    isExpanded ?
-                                        <ChevronDown size={16} className="sm:w-[18px] sm:h-[18px] text-gray-600 flex-shrink-0" /> :
-                                        <ChevronRight size={16} className="sm:w-[18px] sm:h-[18px] text-gray-600 flex-shrink-0" />
-                                )}
-                            </div>
-
-                            <h3 className="font-semibold text-gray-800 mb-2 text-sm sm:text-base truncate">{lesson.title || `Lesson ${index + 1}`}</h3>
-
-                            {accessLevel === 'full' && (
-                                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-xs text-gray-600">
-                                    <div className="flex items-center gap-1">
-                                        <div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0"></div>
-                                        <span>Video: {Math.round(videoProgress * 100)}%</span>
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                        <div className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0"></div>
-                                        <span>Quiz: {quizProgress >= 0 ? `${Math.round(quizProgress * 100)}%` : 'Not taken'}</span>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-
-                {isExpanded && !isLocked && (
-                    <div className="border-t border-gray-100 bg-gray-50">
-                        <div className="p-3 sm:p-4 space-y-2">
-                            {lesson.video && (
-                                <LessonItem
-                                    type="video"
-                                    content={lesson.video ? { ...lesson.video, lessonId: lesson.id } : null}
-                                    selected={selectedContent.type === 'video' && selectedContent.item === lesson.video?.path}
-                                    progress={videoProgress}
-                                    locked={isLocked}
-                                />
-                            )}
-
-                            {lesson.quiz && (
-                                <LessonItem
-                                    type="quiz"
-                                    content={lesson.quiz ? { ...lesson.quiz, lessonId: lesson.id } : null}
-                                    selected={selectedContent.type === 'quiz' && selectedContent.item === lesson.quiz?.path}
-                                    progress={quizProgress}
-                                    locked={isLocked}
-                                />
-                            )}
-
-                            {lesson.file && (
-                                <LessonItem
-                                    type="file"
-                                    content={lesson.file ? { ...lesson.file, lessonId: lesson.id } : null}
-                                    selected={selectedContent.type === 'file' && selectedContent.item === lesson.file?.path}
-                                    progress={fileProgress}
-                                    locked={isLocked}
-                                />
-                            )}
-
-                            {accessLevel === 'full' && (
-                                <div className="mt-3 sm:mt-4 pt-2 border-t border-gray-200">
-                                    <button
-                                        onClick={() => markLessonCompleted(lesson.id)}
-                                        className={`w-full py-2 sm:py-3 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 ${
-                                            completed 
-                                                ? 'bg-green-500 text-white shadow-sm' 
-                                                : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-green-400 hover:text-green-600 hover:shadow-sm'
-                                        }`}
-                                    >
-                                        {completed ? '✓ Completed' : 'Mark as Completed'}
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                )}
-            </div>
-        );
-    };
-
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                    <div className="text-gray-600 font-medium">Loading course content...</div>
-                </div>
-            </div>
-        );
+  const renderLessonContent = (lesson) => {
+    const contentItems = []
+    
+    // Add video if exists
+    if (lesson.videoUrl) {
+      contentItems.push({
+        type: 'video',
+        title: lesson.video,
+        data: lesson.videoUrl || lesson.video,
+        duration: lesson.videoDuration
+      })
+    }
+    
+    // Add quiz if exists
+    if (lesson.quizId) {
+      contentItems.push({
+        type: 'quiz',
+        title: lesson.quiz,
+        data: lesson.quizData || lesson.quiz
+      })
+    }
+    
+    // Add PDF if exists
+    if (lesson.notesUrl) {
+      contentItems.push({
+        type: 'file',
+        title: lesson.pdf,
+        data: lesson.pdfUrl || lesson.pdf
+      })
     }
 
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-            {/* Enhanced Navbar */}
-            <nav className="bg-white shadow-lg border-b border-gray-200 sticky top-0 z-50">
-                <div className="px-4 sm:px-6 py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
-                            <button 
-                                onClick={() => navigate(`/course/${course.id}`)}
-                                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-all duration-200 text-gray-700 hover:text-gray-900 font-medium text-sm sm:text-base flex-shrink-0"
-                            >
-                                <ArrowLeft size={16} className="sm:w-[18px] sm:h-[18px]" />
-                                <span className="hidden sm:inline">Back</span>
-                                <span className="sm:hidden">Back</span>
-                            </button>
-                            
-                            <div className="h-6 sm:h-8 w-px bg-gray-300 flex-shrink-0"></div>
-                            
-                            <div className="min-w-0 flex-1">
-                                <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent truncate">
-                                    {course?.title || 'Course Content'}
-                                </h1>
-                                <p className="text-xs sm:text-sm text-gray-600 mt-1 hidden sm:block">
-                                    {accessLevel === 'preview' ? 'Preview Mode' : 
-                                     accessLevel === 'full' ? 'Full Access' : 'Learning Dashboard'}
-                                </p>
-                            </div>
-                        </div>
+    // Handle content array if it exists (for more flexible lesson structure)
+    if (lesson.content && Array.isArray(lesson.content)) {
+      contentItems.push(...lesson.content)
+    }
 
-                        <div className="flex items-center gap-3 flex-shrink-0">
-                            {accessLevel === 'full' && (
-                                <div className="text-right hidden sm:block">
-                                    <div className="text-sm font-semibold text-gray-800">
-                                        Progress: {Math.round((Object.values(progress[course?.id] || {}).filter(p => p[0] === 1).length / Math.max(lessons.length, 1)) * 100)}%
-                                    </div>
-                                    <div className="text-xs text-gray-500">
-                                        {Object.values(progress[course?.id] || {}).filter(p => p[0] === 1).length} / {lessons.length} lessons
-                                    </div>
-                                </div>
-                            )}
-                            {accessLevel === 'full' && (
-                                <div className="sm:hidden">
-                                    <div className="text-xs font-semibold text-gray-800">
-                                        {Math.round((Object.values(progress[course?.id] || {}).filter(p => p[0] === 1).length / Math.max(lessons.length, 1)) * 100)}%
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </nav>
+    return contentItems
+  }
 
-            <div className="flex flex-col lg:flex-row flex-1 min-h-[calc(100vh-80px)]">
-                {/* Enhanced Left Sidebar */}
-                <div className="w-full lg:w-96 bg-white border-b lg:border-b-0 lg:border-r border-gray-200 shadow-sm overflow-y-auto max-h-[50vh] lg:max-h-none">
-                    <div className="p-4 sm:p-6">
-                        <div className="flex items-center justify-between mb-4 sm:mb-6">
-                            <h2 className="text-lg sm:text-xl font-bold text-gray-800">
-                                Course Lessons
-                            </h2>
-                            {accessLevel === 'preview' && (
-                                <span className="px-2 sm:px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full">
-                                    Preview
-                                </span>
-                            )}
-                        </div>
-
-                        {lessons.length === 0 ? (
-                            <div className="text-center py-8 sm:py-12">
-                                <div className="text-gray-400 mb-2 text-2xl sm:text-3xl">📚</div>
-                                <div className="text-gray-600 font-medium text-sm sm:text-base">No lessons available yet</div>
-                                <div className="text-gray-500 text-xs sm:text-sm">Check back later for updates</div>
-                            </div>
-                        ) : (
-                            <div className="space-y-3 sm:space-y-4">
-                                {lessons.map((lesson, index) => (
-                                    <LessonCard key={lesson.id || index} lesson={lesson} index={index} />
-                                ))}
-                            </div>
-                        )}
-
-                        {accessLevel === 'preview' && (
-                            <div className="mt-6 sm:mt-8 p-4 sm:p-6 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl border border-yellow-200 shadow-sm">
-                                <div className="text-center">
-                                    <div className="text-xl sm:text-2xl mb-2 sm:mb-3">🔓</div>
-                                    <h3 className="font-bold text-yellow-800 mb-2 text-sm sm:text-base">Unlock Full Access</h3>
-                                    <p className="text-xs sm:text-sm text-yellow-700 mb-3 sm:mb-4">
-                                        Enroll now to access all lessons, quizzes, and downloadable resources.
-                                    </p>
-                                    <button
-                                        onClick={() => navigate(`/course/${course.id}/enroll`)}
-                                        className="w-full bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 text-white py-2 sm:py-3 rounded-lg text-xs sm:text-sm font-bold transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                                    >
-                                        Enroll Now
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Centered Content Viewer */}
-                <div className="flex-1 flex justify-center">
-                    <div className="w-full max-w-3xl px-4 sm:px-6">
-                        <ContentViewer
-                            selectedType={selectedContent.type}
-                            selectedItem={selectedContent.item}
-                            title={selectedContent.title}
-                        />
-                    </div>
-                </div>
-            </div>
+  // Lock Screen Component
+  const LockScreen = () => (
+    <div className="flex items-center justify-center h-full">
+      <div className="text-center p-8 bg-white rounded-lg shadow-lg border-2 border-gray-200 max-w-md mx-4">
+        <div className="mb-6">
+          <Lock size={64} className="text-gray-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold mb-2" style={{ color: '#2E4057' }}>
+            Course Locked
+          </h2>
+          <p className="text-lg opacity-70 mb-6" style={{ color: '#2E4057' }}>
+            Enroll to access the full course content
+          </p>
         </div>
-    );
-};
+        <div className="space-y-4">
+          <p className="text-sm opacity-60" style={{ color: '#2E4057' }}>
+            You can only view the first lesson as a preview. 
+            To unlock all lessons and course materials, please enroll in this course.
+          </p>
+          <button 
+            className="w-full bg-[#A0C878] hover:cursor-pointer text-white py-2 px-4 rounded-lg transition-colors"
+            onClick={() => {
+              // Navigate to enrollment page or show enrollment modal
+              // You can implement this based on your app's flow
+              console.log('Navigate to enrollment');
+            }}
+          >
+            Enroll Now
+          </button>
+        </div>
+      </div>
+    </div>
+  )
 
-export default ViewCourseContent;
+  return (
+    <div className="min-h-screen" style={{ backgroundColor: '#FFFDF6' }}>
+      {/* Blurred Overlay */}
+       
+
+      {/* Header with menu button */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="flex items-center justify-between px-3 sm:px-4 py-3">
+          <div className="flex items-center">
+            <button
+              onClick={handleBackButton}
+              className="p-1.5 sm:p-2 rounded-md hover:bg-gray-100 transition-colors mr-3 sm:mr-4"
+            >
+              <ArrowLeft size={20} className="text-gray-600 sm:w-6 sm:h-6" />
+            </button>
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold" style={{ color: '#2E4057' }}>
+              View Course Content
+            </h1>
+          </div>
+          
+          {/* Enrollment Status Indicator */}
+          <div className="flex items-center gap-2">
+            {isEnrolled ? (
+              <span className="text-sm bg-green-100 text-green-800 px-3 py-1 rounded-full">
+                Enrolled
+              </span>
+            ) : (
+              <span className="text-sm bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full">
+                Preview Mode
+              </span>
+            )}
+          </div>
+        </div>
+      </header>
+
+      {/* Main content with lesson sidebar and content area */}
+      <div className="flex flex-1 min-h-screen">
+        {/* Left Lesson Sidebar */}
+        <div className="w-80 bg-white border-r shadow-sm overflow-y-auto">
+          <div className="p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold" style={{ color: '#2E4057' }}>
+                Course Lessons
+              </h2>
+              {!isEnrolled && (
+                <Lock size={20} className="text-gray-400" />
+              )}
+            </div>
+            
+            {/* Enrollment Warning for Non-enrolled Users */}
+            {!isEnrolled && (
+              <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-sm text-yellow-800">
+                  <Lock size={16} className="inline mr-2" />
+                  Only first lesson available in preview mode
+                </p>
+              </div>
+            )}
+            
+            {/* Loading State */}
+            {loading && (
+              <div className="flex items-center justify-center p-8">
+                <div className="text-sm" style={{ color: '#2E4057' }}>Loading lessons...</div>
+              </div>
+            )}
+
+            {/* Empty State */}
+            {!loading && lessons?.length === 0 && (
+              <div className="flex items-center justify-center p-8">
+                <div className="text-sm opacity-70" style={{ color: '#2E4057' }}>No lessons available</div>
+              </div>
+            )}
+            
+            {/* Lessons List */}
+            {!loading && lessons.length > 0 && (
+              <div className="space-y-2">
+                {lessons.map((lesson, index) => {
+                  const contentItems = renderLessonContent(lesson)
+                  // Use a more unique key - combine lesson.id with index as fallback
+                  const lessonKey = lesson.id || `lesson-${index}`
+                  
+                  return (
+                    <div key={lessonKey} className="border rounded-lg overflow-hidden" style={{ backgroundColor: '#DDEB9D' }}>
+                      {/* Lesson Header */}
+                      <div
+                        className="p-4 cursor-pointer hover:bg-opacity-80 transition-all duration-200"
+                        onClick={(e) => {
+                          e.stopPropagation() // Prevent event bubbling
+                          toggleLessonExpansion(lessonKey)
+                        }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-sm font-semibold" style={{ color: '#2E4057' }}>
+                                Lesson {index + 1}
+                              </span>
+                              {expandedLessons[lessonKey] ? 
+                                <ChevronDown size={16} style={{ color: '#2E4057' }} /> : 
+                                <ChevronRight size={16} style={{ color: '#2E4057' }} />
+                              }
+                            </div>
+                            <h3 className="font-bold text-sm" style={{ color: '#2E4057' }}>
+                              {lesson.title || `Lesson ${index + 1} Content`}
+                            </h3>
+                            <div className="flex items-center gap-4 mt-2 text-xs" style={{ color: '#2E4057' }}>
+                              <span>{contentItems.length} Items</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Lesson Content Dropdown */}
+                      {expandedLessons[lessonKey] && (
+                        <div className="border-t bg-white bg-opacity-50">
+                          <div className="p-2">
+                            {contentItems.map((item, itemIndex) => (
+                              <button
+                                key={itemIndex}
+                                onClick={(e) => {
+                                  e.stopPropagation() // Prevent event bubbling
+                                  handleContentClick(item.data, item.type, item.title)
+                                }}
+                                className="w-full flex items-center gap-3 p-2 rounded hover:bg-white hover:bg-opacity-70 transition-colors text-sm text-left"
+                              >
+                                {getContentIcon(item.type)}
+                                <span className="flex-1" style={{ color: '#2E4057' }}>
+                                  {item.title || `${item.type} content`}
+                                </span>
+                                {item.duration && (
+                                  <span className="text-xs opacity-70" style={{ color: '#2E4057' }}>
+                                    {item.duration}
+                                  </span>
+                                )}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+                
+                {/* Locked Lessons Indicator for Non-enrolled Users */}
+                {!isEnrolled && (
+                  <div className="border rounded-lg overflow-hidden bg-gray-100 opacity-60">
+                    <div className="p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Lock size={16} className="text-gray-400" />
+                        <div>
+                          <span className="text-sm font-semibold text-gray-500">
+                            More Lessons Available
+                          </span>
+                          <p className="text-xs text-gray-400 mt-1">
+                            Enroll to unlock all course content
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right Content Area */}
+        <div className="flex-1 p-6">
+          {selectedContent ? (
+            <ContentViewer 
+              selectedItem={selectedContent.data}
+              selectedType={selectedContent.type}
+              title={selectedContent.title}
+            />
+          ) : !isEnrolled ? (
+            <LockScreen />
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center">
+                <h2 className="text-2xl font-bold mb-4" style={{ color: '#2E4057' }}>
+                  Welcome to the Course
+                </h2>
+                <p className="text-lg opacity-70" style={{ color: '#2E4057' }}>
+                  Click on any lesson from the sidebar to expand and view its content
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default ViewCourseContent
