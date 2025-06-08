@@ -1,0 +1,74 @@
+import axios from 'axios';
+
+// Create axios instance with base URL and credentials
+const axiosInstance = axios.create({
+  baseURL: `${import.meta.env.VITE_API_USER_URL}`,
+  withCredentials: true,
+});
+
+// Add course
+export const addCourse = async (courseData) => {
+  try {
+    const formData = {
+      ...courseData,
+      skills: Array.isArray(courseData.skills) ? courseData.skills : courseData.skills.split(',').map(skill => skill.trim())
+    };
+    
+    const response = await axiosInstance.post('/addCourse', formData);
+    return response;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+// Add lesson to a course
+export const addLesson = async (lessonData) => {
+  try {
+    const response = await axiosInstance.post('/addLesson', lessonData);
+    return response;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+// Get instructor's courses
+export const getMyCourses = async () => {
+  try {
+    const response = await axiosInstance.post('/getMyCourses');
+    
+    return response;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+// Get course details with lessons
+export const getCurrentCourse = async (courseId) => {
+  try {
+    const response = await axiosInstance.post('/getCurrentCourse', { courseId });
+    return response;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+// Get income for a specific course
+export const getCourseIncome = async (courseId) => {
+  try {
+    const response = await axiosInstance.post('/getCourseIncome', { courseId });
+    return response;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+// Get total income across all courses
+export const getTotalIncome = async () => {
+  try {
+    const response = await axiosInstance.post('/getTotalIncome');
+    return response;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
