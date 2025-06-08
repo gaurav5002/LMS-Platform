@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { X, Upload, FileText } from 'lucide-react';
 import { addLesson } from '../../api/instructor';
 import toast from 'react-hot-toast';
-
-const AddLessonModal = ({ isOpen, onClose, courseId }) => {
+import { uploadFile } from '../../api/fileUpload';
+const AddLessonModal = ({ isOpen, onClose, courseId, onLessonAdded }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [duration, setDuration] = useState('');
@@ -20,12 +20,34 @@ const AddLessonModal = ({ isOpen, onClose, courseId }) => {
 
     try {
       setLoading(true);
+      let tempFormData = new FormData();
+      tempFormData.append('file', videoFile);
+      let videoUrl = null;
+      try {
+        const tempResponse = await uploadFile(tempFormData);
+        videoUrl = tempResponse.fileUrl;
+      } catch (error) {
+        console.error('Error uploading video:', error);
+        toast.error('Failed to upload video');
+        return;
+      }
+      tempFormData = new FormData();
+      tempFormData.append('file', notesFile);
+      let notesUrl = null;
+      try {
+        const tempResponse = await uploadFile(tempFormData);
+        notesUrl = tempResponse.fileUrl;
+      } catch (error) {
+        console.error('Error uploading notes:', error);
+        toast.error('Failed to upload notes');
+        return;
+      }
       const formData = {
         title: title,
         description: description,
         courseId: courseId,
-        videoUrl: videoFile.name,
-        notesUrl: notesFile.name,
+        videoUrl: videoUrl,
+        notesUrl: notesUrl,
         duration: duration,
         quizId: "temp",
       };
@@ -33,6 +55,7 @@ const AddLessonModal = ({ isOpen, onClose, courseId }) => {
       const response = await addLesson(formData);
       if (response.data.success) {
         toast.success('Lesson added successfully');
+        onLessonAdded();
         onClose();
       } else {
         toast.error(response.data.message || 'Failed to add lesson');
@@ -122,8 +145,8 @@ const AddLessonModal = ({ isOpen, onClose, courseId }) => {
                   className="flex items-center justify-center px-4 py-2 rounded-lg border cursor-pointer transition-colors hover:bg-[#DDEB9D]"
                   style={{ borderColor: '#DDEB9D' }}
                 >
-                  <Upload className="w-5 h-5 mr-2" style={{ color: '#2E4057' }} />
-                  <span style={{ color: '#2E4057' }}>
+                  <Upload className="w-5 h-5 mr-2 flex-shrink-0" style={{ color: '#2E4057' }} />
+                  <span className="truncate max-w-[200px]" style={{ color: '#2E4057' }}>
                     {videoFile ? videoFile.name : 'Upload Video'}
                   </span>
                 </label>
@@ -147,8 +170,8 @@ const AddLessonModal = ({ isOpen, onClose, courseId }) => {
                   className="flex items-center justify-center px-4 py-2 rounded-lg border cursor-pointer transition-colors hover:bg-[#DDEB9D]"
                   style={{ borderColor: '#DDEB9D' }}
                 >
-                  <FileText className="w-5 h-5 mr-2" style={{ color: '#2E4057' }} />
-                  <span style={{ color: '#2E4057' }}>
+                  <FileText className="w-5 h-5 mr-2 flex-shrink-0" style={{ color: '#2E4057' }} />
+                  <span className="truncate max-w-[200px]" style={{ color: '#2E4057' }}>
                     {notesFile ? notesFile.name : 'Upload Material'}
                   </span>
                 </label>

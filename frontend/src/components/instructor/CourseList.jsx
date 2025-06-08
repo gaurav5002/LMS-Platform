@@ -10,9 +10,14 @@ const CourseList = ({ courses }) => {
   useEffect(() => {
     const fetchIncomes = async () => {
       try {
-        const response = await getCourseIncome();
-        if (response.data.success) {
-          setCourseIncomes(response.data.incomes);
+        for (const course of courses) {
+          const response = await getCourseIncome(course._id);
+          if (response.data.success) {
+            setCourseIncomes(prev => ({
+              ...prev,
+              [course._id]: response.data.incomes
+            }));
+          }
         }
       } catch (error) {
         console.error('Error fetching course incomes:', error);
@@ -44,9 +49,14 @@ const CourseList = ({ courses }) => {
         >
           <div className="relative h-48">
             <img
+              style={{ 
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                backgroundColor: '#f8f8f8'
+              }}
               src={course.photoUrl}
               alt={course.name}
-              className="w-full h-full object-cover"
             />
           </div>
           <div className="p-4">

@@ -3,8 +3,8 @@ import { X, Upload } from 'lucide-react';
 import useAuthStore from '../../zustand/authStore';
 import { addCourse } from '../../api/instructor';
 import toast from 'react-hot-toast';
-
-const AddCourseModal = ({ isOpen, onClose, onCourseAdded }) => {
+import { uploadFile } from '../../api/fileUpload';    
+const AddCourseModal = ({ isOpen, onClose }) => {
   const { user } = useAuthStore();
   const [formData, setFormData] = useState({
     title: '',
@@ -55,18 +55,33 @@ const AddCourseModal = ({ isOpen, onClose, onCourseAdded }) => {
 
     try {
       setLoading(true);
-      const formData = new FormData();
-      formData.append('name', formData.title);
-      formData.append('description', formData.description);
-      formData.append('price', formData.price);
-      formData.append('photo', formData.image);
-      formData.append('instructor', formData.instructor);
-      formData.append('skills', formData.skills);
+      const tempFormData = new FormData();
+      tempFormData.append('file', formData.image);
+      let photoUrl = null;
+      try {
+        const tempResponse = await uploadFile(tempFormData);
+        photoUrl = tempResponse.fileUrl; 
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        toast.error('Failed to upload file');
+        return;
+      }
+      const skillArray = formData.skills.split(',').map(skill => skill.trim());
+      const newFormData = {
+        name: formData.title,
+        description: formData.description,
+        price: formData.price,
+        photoUrl: photoUrl,
+        instructor: formData.instructor,
+        skills: skillArray
+      }
 
-      const response = await addCourse(formData);
+      const response = await addCourse(newFormData);
+      console.log(response.data);
       if (response.data.success) {
         toast.success('Course added successfully');
-        onCourseAdded(response.data.course);
+        onCourseAdded();
+        onClose();
         setFormData({
           title: '',
           image: null,

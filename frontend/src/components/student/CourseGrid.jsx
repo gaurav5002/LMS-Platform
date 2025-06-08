@@ -9,12 +9,11 @@ import { useSidebarStore } from '../../zustand/useSidebarStore'; // ensure corre
 
 
 const CourseGrid = ({ courses }) => {
-  
+
   const { activeTab, setActiveTab } = useSidebarStore();
   const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
 
-  console.log(courses)
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -248,7 +247,7 @@ const CourseGrid = ({ courses }) => {
               <CourseCard
                 key={course._id || index}
                 id={course._id}
-                image={course.image}
+                image={course.photoUrl}
                 topic={course.name}
                 description={course.description}
                 lessons={course.lessons}

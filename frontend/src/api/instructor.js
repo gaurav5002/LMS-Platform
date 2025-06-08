@@ -9,12 +9,8 @@ const axiosInstance = axios.create({
 // Add course
 export const addCourse = async (courseData) => {
   try {
-    const formData = {
-      ...courseData,
-      skills: Array.isArray(courseData.skills) ? courseData.skills : courseData.skills.split(',').map(skill => skill.trim())
-    };
+    const response = await axiosInstance.post('/addCourse', courseData);
     
-    const response = await axiosInstance.post('/addCourse', formData);
     return response;
   } catch (error) {
     throw error.response?.data || error;

@@ -252,7 +252,7 @@ const ViewCourseContent = () => {
       contentItems.push({
         type: 'file',
         title: lesson.pdf,
-        data: lesson.pdfUrl || lesson.pdf
+        data: lesson.notesUrl || lesson.pdf
       })
     }
 

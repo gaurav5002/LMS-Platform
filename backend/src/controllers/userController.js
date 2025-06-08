@@ -17,7 +17,7 @@ export async function addCourse(req,res){
         const description = req.body.description;
         const skills = req.body.skills;
         const price = req.body.price;//we can use the {} = req.body later on . 
-        
+        console.log(req.body);
         const newCourse = await Course.create({
             name,
             photoUrl,
