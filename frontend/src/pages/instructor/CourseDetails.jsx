@@ -13,6 +13,7 @@ import {
   BookOpen,
   Image,
   Download,
+  HelpCircle,
 } from "lucide-react";
 import AddLessonModal from "../../components/instructor/AddLessonModal";
 import LogoutConfirmationModal from "../../components/Common/LogoutConfirmationModal";
@@ -309,6 +310,13 @@ const CourseDetails = () => {
                           <span>Course Material</span>
                         </button>
                       )}
+                      <button
+                        onClick={() => navigate(`/instructor/quiz/${lesson._id}`)}
+                        className="flex items-center p-3 rounded-lg transition-colors hover:bg-[#DDEB9D] text-[#2E4057]"
+                      >
+                        <HelpCircle className="w-5 h-5 mr-2" />
+                        <span>Manage Quiz</span>
+                      </button>
                     </div>
                     {selectedContent?.lessonId === lesson._id && (
                       <div className="mt-4">

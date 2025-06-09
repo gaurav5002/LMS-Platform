@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { sendOtp, resetPassword } from '../../api/auth';
 
-const ForgotPassword = () => {
+const ForgotPassword = ({onSubmit}) => {
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -39,7 +39,7 @@ const ForgotPassword = () => {
       const { data } = await resetPassword(email, otp, newPassword);
       if (data.success) {
         setMessage('Password reset. Redirecting to login...');
-        setTimeout(() => navigate('/login'), 2000);
+        onSubmit();
       }
     } catch (err) {
       setError(err.message || 'Failed to reset password');

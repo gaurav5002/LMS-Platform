@@ -20,6 +20,7 @@ const protectRoute = async (req,res,next) => {
         }
         const user = await User.findById(decoded.id);
         req.user = user;
+        console.log(user);
         next();
     }
     catch(error){

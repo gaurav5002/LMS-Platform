@@ -9,14 +9,13 @@ import {
   sendOtp,
   resetPassword,
   RegisterInstructor,
-  verifyInstructor,
-  createAdmin,
-  rejectInstructor,
-  googleLogin
+  googleLogin,
+  checkRequest,
+  tempRegisterInstructor
 } from '../controllers/authController.js';
 
 
-import { adminaccess, protectRoute } from '../middleWare/authMiddleWare/protectRoute.js';
+import {  protectRoute } from '../middleWare/authMiddleWare/protectRoute.js';
 import { otpRequestLimiter, loginRequestLimiter } from '../middleWare/authMiddleWare/rateLimit.js';
 
 import nosqlSanitizer from '../middleWare/authMiddleWare/injectionProtect.js';
@@ -30,21 +29,16 @@ router.post('/logout', logout);
 router.post('/sendOtp', otpRequestLimiter, sendOtp);
 router.post('/changePassword', resetPassword);
 
-
+router.post('/tempRegisterInstructor', tempRegisterInstructor);
 
 // Instructor routes
 router.post('/instructorRegister', RegisterInstructor);
-router.post('/verifyInstructor', protectRoute, adminaccess, verifyInstructor);
-router.post('/rejectInstructor', protectRoute, adminaccess, rejectInstructor);
 
-
-//admin routes 
-router.post('/createAdmin', protectRoute, adminaccess, createAdmin);
 
 //google Oauth routes 
 router.post('/googleLogin', googleLogin);
 
-
+router.post('/checkRequest', checkRequest);
 
 router.get('/me', protectRoute, async (req, res) => {
   res.status(200).json({

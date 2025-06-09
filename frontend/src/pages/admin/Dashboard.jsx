@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Users, BookOpen, DollarSign, TrendingUp, Menu } from 'lucide-react';
-import AdminSidebar from '../../components/admin/AdminSidebar';
+import { Users, BookOpen, DollarSign, TrendingUp, LogOut } from 'lucide-react';
 import AdminStats from '../../components/admin/AdminStats';
-import AdminTable from '../../components/admin/AdminTable';
+import PendingRequestsSection from '../../components/admin/PendingRequestsSection';
 import toast from 'react-hot-toast';
+import useAuthStore from '../../zustand/authStore';
+import LogoutConfirmationModal from '../../components/Common/LogoutConfirmationModal';
+import LearnHubLogo from '../../components/Common/LearnHubLogo';
+import { getIncome, getNoOfInstructors, getNoOfStudents, getNoOfCourses } from '../../api/admin';
 
 const Dashboard = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalCourses: 0,
@@ -14,6 +16,8 @@ const Dashboard = () => {
     activeInstructors: 0
   });
   const [loading, setLoading] = useState(true);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const { logout } = useAuthStore();
 
   useEffect(() => {
     fetchDashboardData();
@@ -22,23 +26,40 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      // TODO: Replace with actual API call
-      // const response = await getAdminStats();
-      // setStats(response.data);
       
-      // Temporary mock data
-      setStats({
-        totalUsers: 1250,
-        totalCourses: 85,
-        totalRevenue: 250000,
-        activeInstructors: 45
-      });
+      // Fetch all stats in parallel
+      const [incomeResponse, coursesResponse, instructorsResponse, studentsResponse] = await Promise.all([
+        getIncome(),
+        getNoOfCourses(),
+        getNoOfInstructors(),
+        getNoOfStudents()
+      ]);
+
+      if (incomeResponse.success && instructorsResponse.success && studentsResponse.success) {
+        setStats({
+          totalUsers: studentsResponse.noOfStudents,
+          totalCourses: coursesResponse.noOfCourses, // TODO: Add API endpoint for total courses
+          totalRevenue: incomeResponse.income || 0,
+          activeInstructors: instructorsResponse.noOfInstructors
+        });
+      } else {
+        throw new Error('Failed to fetch some dashboard data');
+      }
     } catch (error) {
-      toast.error('Failed to fetch dashboard data');
       console.error('Error fetching dashboard data:', error);
+      toast.error('Failed to fetch dashboard data');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLogout = () => {
+    setIsLogoutModalOpen(true);
+  };
+
+  const handleLogoutConfirm = () => {
+    logout();
+    setIsLogoutModalOpen(false);
   };
 
   if (loading) {
@@ -50,20 +71,25 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen flex" style={{ backgroundColor: '#FAF6E9' }}>
-      <AdminSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+    <div className="min-h-screen" style={{ backgroundColor: '#FAF6E9' }}>
       <div className="flex-1 flex justify-center items-start p-6">
         <div className="w-full max-w-6xl mx-auto">
           {/* Header */}
-          <div className="flex justify-between items-center mb-8">
-            <div className="flex items-center">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8">
+            <div className="flex flex-col items-center sm:items-start w-full sm:w-1/4">
+              <LearnHubLogo />
+            </div>
+            <h1 className="text-2xl font-bold text-center w-full sm:w-auto mt-2 sm:mt-0" style={{ color: '#2E4057' }}>
+              Admin Dashboard
+            </h1>
+            <div className="w-full sm:w-1/4 flex justify-center sm:justify-end mt-2 sm:mt-0">
               <button
-                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className="lg:hidden p-2 rounded-lg mr-4 hover:bg-[#DDEB9D]"
+                onClick={handleLogout}
+                className="flex items-center space-x-2 px-4 py-2 rounded-lg text-[#2E4057] hover:bg-[#DDEB9D] transition-colors"
               >
-                <Menu className="w-6 h-6" style={{ color: '#2E4057' }} />
+                <LogOut className="w-5 h-5" />
+                <span>Logout</span>
               </button>
-              <h1 className="text-2xl font-bold" style={{ color: '#2E4057' }}>Admin Dashboard</h1>
             </div>
           </div>
 
@@ -95,19 +121,17 @@ const Dashboard = () => {
             />
           </div>
 
-          {/* Tables Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white rounded-xl p-6 shadow-sm" style={{ backgroundColor: '#FFFDF6' }}>
-              <h2 className="text-xl font-semibold mb-6" style={{ color: '#2E4057' }}>Recent Users</h2>
-              <AdminTable type="users" />
-            </div>
-            <div className="bg-white rounded-xl p-6 shadow-sm" style={{ backgroundColor: '#FFFDF6' }}>
-              <h2 className="text-xl font-semibold mb-6" style={{ color: '#2E4057' }}>Recent Courses</h2>
-              <AdminTable type="courses" />
-            </div>
-          </div>
+          {/* Pending Requests Section */}
+          <PendingRequestsSection />
         </div>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      <LogoutConfirmationModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={handleLogoutConfirm}
+      />
     </div>
   );
 };

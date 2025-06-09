@@ -1,10 +1,10 @@
 import { Course, Lesson } from "../models/Course.js";
-import mongoose from "mongoose";
 import User from "../models/user.js";
 import UserProgress from "../models/UserProgress.js";
 import Discussions from "../models/Discussions.js";
 import Quiz from "../models/Quiz.js";
 import Cart from "../models/Cart.js";
+
 export async function addCourse(req,res){
     try {
         const user = req.user;
@@ -17,7 +17,7 @@ export async function addCourse(req,res){
         const description = req.body.description;
         const skills = req.body.skills;
         const price = req.body.price;//we can use the {} = req.body later on . 
-        console.log(req.body);
+
         const newCourse = await Course.create({
             name,
             photoUrl,
@@ -60,14 +60,13 @@ export async function  addLesson(req,res) {
             return res.status(403).json({success:false,message:"forbidden request you are not allowed to do this"})
         }
 
-        const {title,videoUrl,notesUrl,quizId,duration,description} = req.body;
+        const {title,videoUrl,notesUrl,duration,description} = req.body;
 
         const lesson = await Lesson.create({
             courseId,
             title,
             videoUrl,
             notesUrl,
-            quizId,
             duration,
             description
         })
@@ -200,7 +199,6 @@ export async function addMessage(req,res){
         return res.status(200).json({success:true,message:"message has been added"});
 
     } catch (e) {
-        
         return res.status(500).json({success:true,message:"internalServerError",e});
     }
 }
@@ -226,14 +224,7 @@ export async function getLesson(req,res){
     }
 }
 
-export async function getPendingRequests(req,res){
-    try {
-        const requests = await Request.find();
-        return res.status(200).json({success:true,message:"success",requests});
-    } catch (e) {
-          return res.status(500).json({success:false,message:"internalServerError",e});
-    }
-}
+
 
 
 
@@ -245,7 +236,6 @@ export async function updateProgress(req, res) {
         const user = req.user;
         const courseId = req.body.courseId;
         const progressVector = req.body.progressVector;
-        
         const progressBar = await UserProgress.findOne({
             courseId,
             userId: user._id, 
@@ -257,7 +247,7 @@ export async function updateProgress(req, res) {
         while (lessonprogress.length <= lessonidx) {
             lessonprogress.push([0, -1, 0]);
         }
-        const updated = lessonprogress[lessonidx].map((val, idx) => Math.min(val + progressVector[idx], 1));
+        const updated = lessonprogress[lessonidx].map((val, idx) => val + progressVector[idx]);
 
         updated[0] = Math.min(1, Math.max(0, updated[0]));
         updated[2] = Math.min(1, Math.max(0, updated[2]));
@@ -301,14 +291,27 @@ export async function getProgress(req,res){
 export async function addQuiz(req,res){
     try {
         const lessonId = req.body.lessonId.toString();//you will get lesson id from the currrent course returning everything . store every lesson id in a local variables or some handling .
-        const {title,theoryQuestions,theoryAnswers,Mcqs,McqOpts} = req.body;
-        const newQuiz = await Quiz.create({
-            lessonId,title,theoryQuestions,theoryAnswers,Mcqs,McqOpts
-        });
+        const {theoryQuestions,theoryAnswers,Mcqs,McqOpts,McqAnswers} = req.body;
+        
         const lesson = await Lesson.findById(lessonId);
         if(!lesson){
             return res.status(404).json({success:false,message:"lesson does not exist"});
         }
+        const quiz = await Quiz.findOne({lessonId:lessonId});
+        if(quiz){
+            quiz.theoryQuestions = theoryQuestions;
+            quiz.theoryAnswers = theoryAnswers;
+            quiz.Mcqs = Mcqs;
+            quiz.McqOpts = McqOpts;
+            quiz.McqAnswers = McqAnswers;
+            await quiz.save();
+            return res.status(200).json({success:true,message:"quiz updated"});
+        }
+        const title = lesson.title;
+        const newQuiz = await Quiz.create({
+            lessonId,title,theoryQuestions,theoryAnswers,Mcqs,McqOpts,McqAnswers
+        });
+        
         await Lesson.findByIdAndUpdate(lessonId,{
             quizId:newQuiz._id
         });
@@ -406,7 +409,9 @@ export async function getQuiz(req, res) {
             success:true,
             mcqQuestions: quiz.Mcqs,
             mcqOptions: quiz.McqOpts,
-            theoryQuestions: quiz.theoryQuestions
+            theoryQuestions: quiz.theoryQuestions,
+            mcqAnswers: quiz.McqAnswers,
+            theoryAnswers: quiz.theoryAnswers
         });
 
     } catch (e) {
@@ -507,6 +512,7 @@ export async function getMyCourses(req, res) {
     return res.status(500).json({ success:false,message: "Internal Server Error" });
   }
 }
+
 export async function getCourseIncome(req,res){
     try {
         const user = req.user;
@@ -549,6 +555,4 @@ export async function getTotalIncome(req,res){
          return res.status(500).json({ success:false,message: "Internal Server Error" });
     }
 }
-
-
 

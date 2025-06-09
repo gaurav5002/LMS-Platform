@@ -49,7 +49,6 @@ const AddLessonModal = ({ isOpen, onClose, courseId, onLessonAdded }) => {
         videoUrl: videoUrl,
         notesUrl: notesUrl,
         duration: duration,
-        quizId: "temp",
       };
 
       const response = await addLesson(formData);

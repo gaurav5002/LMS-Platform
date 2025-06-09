@@ -38,6 +38,7 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     };
     const uploadResult = await s3.upload(params).promise();
     res.status(200).json({
+      success: true,
       message: "File uploaded successfully",
       fileUrl: uploadResult.Location,
     });

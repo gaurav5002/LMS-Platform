@@ -13,8 +13,9 @@ const useAuthStore = create(
         try {
           set({ loading: true });
           const { data } = await getCurrentUser();
+          
           set({
-            user: (data.success && data.user.isVerified) ? data.user : null,
+            user: (data.success) ? data.user : null,
             loading: false,
             initialCheckDone: true,
           });

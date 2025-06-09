@@ -29,6 +29,6 @@ export const resetPassword = (email, otp, newPassword) =>
   axiosInstance.post('/changepassword', { email, otp, newPassword });
 export const getCurrentUser = () => axiosInstance.get('/me');
 export const googleLogin = (token) => axiosInstance.post('/googleLogin', { token });
-export const instructorRegister = (data) => axiosInstance.post('/instructor-register', data);
-
+export const instructorRegister = (data) => axiosInstance.post('/instructorRegister', data);
+export const checkRequest = (email) => axiosInstance.post('/checkRequest', { email });
 export default axiosInstance;

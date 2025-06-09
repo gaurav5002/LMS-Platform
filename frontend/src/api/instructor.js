@@ -68,3 +68,21 @@ export const getTotalIncome = async () => {
   }
 };
 
+export const addQuiz = async (quizData) => {
+  try {
+    const response = await axiosInstance.post('/addQuiz', quizData);
+    return response;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const getQuiz = async (lessonId) => {
+  try {
+    const response = await axiosInstance.post('/getQuiz', { lessonId });
+    return response;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+

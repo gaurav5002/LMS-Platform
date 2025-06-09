@@ -61,17 +61,18 @@ const LoginPage = () => {
 
     try {
       const { data } = await loginUser(formData);
-      if (data.success && data.user.isVerified) {
-        console.log("hiii");
-        toast.success(`Welcome back ${data.user.name}`)
-        login(data.user);
-      }
+      login(data.user);
       if(data.success && !data.user.isVerified){
-        console.log(data);
-        console.log("here");
+        
         const email = data.user.email;
-        sendOtp(email);
-        navigate('/verify-email', { state: { email: data.user.email } });
+        
+        if(data.user.role === "user"){
+          sendOtp(email);
+          navigate('/verify-email', { state: { email: data.user.email } });
+        }
+        else if(data.user.role === "instructor"){
+          navigate('/instructor/register');
+        }
       }
       if(!data.success){
         setError(data.message);

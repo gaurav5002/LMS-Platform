@@ -10,7 +10,6 @@ import LoginPage from "./pages/Auth/LoginPage";
 import RegisterPage from "./pages/Auth/RegisterPage";
 import Verifymail from "./components/Auth/Verifymail";
 import ForgotPassword from "./components/Auth/ForgotPassword";
-import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import Unauthorized from "./pages/Unauthorized";
 import Browse from "./pages/student/Browse";
 import Dashboard from "./pages/student/Dashboard";
@@ -20,8 +19,9 @@ import useAuthStore from "./zustand/authStore";
 import { Toaster } from "react-hot-toast";
 import InstructorDashboard from "./pages/instructor/Dashboard";
 import CourseDetails from "./pages/instructor/CourseDetails";
+import QuizManagement from "./pages/instructor/QuizManagement";
 import AdminDashboard from "./pages/admin/Dashboard";
-import PendingRequests from "./pages/admin/PendingRequests";
+import InstructorRegister from "./pages/Auth/InstructorRegister";
 
 function App() {
   const { user, loading, initialCheckDone, initialize } = useAuthStore();
@@ -32,47 +32,76 @@ function App() {
     }
   }, [initialCheckDone, initialize]);
 
-  // Public Route - Redirects to appropriate dashboard if user is logged in
-  const PublicRoute = ({ children }) => {
-    if (loading) {
-      return (
-        <div className="flex justify-center items-center h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#A0C878]"></div>
-        </div>
-      );
-    }
+  // Loading component
+  const LoadingSpinner = () => (
+    <div className="flex justify-center items-center h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#A0C878]"></div>
+    </div>
+  );
 
-    if (user) {
-      switch (user.role) {
-        case "user":
-          return <Navigate to="/dashboard" replace />;
-        case "instructor":
-          return <Navigate to="/instructor/dashboard" replace />;
-        case "admin":
-          return <Navigate to="/admin/dashboard" replace />;
-        default:
-          return <Navigate to="/unauthorized" replace />;
+  // Handle verification redirects
+  const handleVerificationRedirect = () => {
+    if (!user.isVerified) {
+      if (user.role === "user") {
+        return <Navigate to="/verify-email" replace />;
+      } else if (user.role === "instructor") {
+        return <Navigate to="/instructor/register" replace />;
       }
     }
+    return null;
+  };
 
+  // Public Route - Redirects to appropriate dashboard if user is logged in
+  const PublicRoute = ({ children }) => {
+    if (loading) return <LoadingSpinner />;
+    
+    if (user) {
+      const verificationRedirect = handleVerificationRedirect();
+      if (verificationRedirect) return verificationRedirect;
+
+      if (user.isVerified) {
+        switch (user.role) {
+          case "user":
+            return <Navigate to="/dashboard" replace />;
+          case "instructor":
+            return <Navigate to="/instructor/dashboard" replace />;
+          case "admin":
+            return <Navigate to="/admin/dashboard" replace />;
+          default:
+            return <Navigate to="/unauthorized" replace />;
+        }
+      }
+    }
     return children;
   };
 
   // Protected Route - Ensures user is authenticated and has correct role
   const ProtectedRouteWithRole = ({ children, allowedRoles }) => {
-    if (loading) {
-      return (
-        <div className="flex justify-center items-center h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#A0C878]"></div>
-        </div>
-      );
-    }
+    if (loading) return <LoadingSpinner />;
 
     if (!user) {
       return <Navigate to="/login" replace state={{ from: window.location.pathname }} />;
     }
 
+    const verificationRedirect = handleVerificationRedirect();
+    if (verificationRedirect) return verificationRedirect;
+
     if (!allowedRoles.includes(user.role)) {
+      return <Navigate to="/unauthorized" replace />;
+    }
+
+    return children;
+  };
+
+  // Special route for instructor registration - only accessible by unverified instructors
+  const InstructorRegistrationRoute = ({ children }) => {
+    if (loading) return <LoadingSpinner />;
+
+    if (!user) {
+      return <Navigate to="/login" replace />;
+    }
+
+    if (user.role !== "instructor" || user.isVerified) {
       return <Navigate to="/unauthorized" replace />;
     }
 
@@ -113,7 +142,7 @@ function App() {
             path="/forgot-password"
             element={
               <PublicRoute>
-                <ForgotPassword />
+                <ForgotPassword onSubmit={initialize}/>
               </PublicRoute>
             }
           />
@@ -155,6 +184,14 @@ function App() {
 
           {/* Instructor Routes */}
           <Route
+            path="/instructor/register"
+            element={
+              <InstructorRegistrationRoute>
+                <InstructorRegister />
+              </InstructorRegistrationRoute>
+            }
+          />
+          <Route
             path="/instructor/dashboard"
             element={
               <ProtectedRouteWithRole allowedRoles={["instructor"]}>
@@ -170,6 +207,14 @@ function App() {
               </ProtectedRouteWithRole>
             }
           />
+          <Route
+            path="/instructor/quiz/:lessonId"
+            element={
+              <ProtectedRouteWithRole allowedRoles={["instructor"]}>
+                <QuizManagement />
+              </ProtectedRouteWithRole>
+            }
+          />
 
           {/* Admin Routes */}
           <Route
@@ -180,47 +225,13 @@ function App() {
               </ProtectedRouteWithRole>
             }
           />
-          <Route
-            path="/admin/pending-requests"
-            element={
-              <ProtectedRouteWithRole allowedRoles={["admin"]}>
-                <PendingRequests />
-              </ProtectedRouteWithRole>
-            }
-          />
-          <Route
-            path="/admin/users"
-            element={
-              <ProtectedRouteWithRole allowedRoles={["admin"]}>
-                <div>Users Management</div>
-              </ProtectedRouteWithRole>
-            }
-          />
-          <Route
-            path="/admin/courses"
-            element={
-              <ProtectedRouteWithRole allowedRoles={["admin"]}>
-                <div>Courses Management</div>
-              </ProtectedRouteWithRole>
-            }
-          />
-          <Route
-            path="/admin/settings"
-            element={
-              <ProtectedRouteWithRole allowedRoles={["admin"]}>
-                <div>Admin Settings</div>
-              </ProtectedRouteWithRole>
-            }
-          />
 
           {/* Default & Fallback Routes */}
           <Route
             path="/"
             element={
               loading ? (
-                <div className="flex justify-center items-center h-screen">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#A0C878]"></div>
-                </div>
+                <LoadingSpinner />
               ) : user ? (
                 <Navigate
                   to={
@@ -245,4 +256,3 @@ function App() {
 }
 
 export default App;
-
