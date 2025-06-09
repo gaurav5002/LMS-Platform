@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import useAuthStore from "./authStore";
 const useEnrollStore = create((set) => ({
   loading: false,
   error: null,
@@ -25,7 +26,7 @@ const useEnrollStore = create((set) => ({
       // Step 1: Create Razorpay order
       const orderRes = await fetch(
         `${import.meta.env.VITE_API_PAYMENT_URL}/createPayment`,
-        { 
+        {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -67,9 +68,15 @@ const useEnrollStore = create((set) => ({
             const verifyData = await verifyRes.json();
             if (verifyData.success) {
               alert("✅ Payment successful!");
+
+              // ✅ Re-fetch latest user with updated enrolledCourses
+              const { initialize } = useAuthStore.getState();
+              await initialize();
+
               set({ loading: false });
               resolve(true);
-            } else {
+            }
+            else {
               alert("❌ Payment verification failed!");
               set({ loading: false });
               resolve(false);

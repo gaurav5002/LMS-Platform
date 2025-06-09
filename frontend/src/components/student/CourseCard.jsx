@@ -20,13 +20,16 @@ const CourseCard = ({
   const [progress, setProgress] = useState(-1);
   const user = useAuthStore((state) => state.user);
   const setSelectedCourse = useCourseStore((state) => state.setSelectedCourse)
+  const enrolled = user?.enrolledCourses?.includes(id) || false;
 
   useEffect(() => {
-    console.log("idhr hu");
+    
     const fetchData = async () => {
       if (!id) return;
+      if(!enrolled)return;
       //setLoading(true);
       try {
+        console.log("idhr hu");
         const progressResponse = await axios.post(
           `${import.meta.env.VITE_API_USER_URL}/getProgress`,
           { courseId: id },
@@ -71,7 +74,7 @@ const CourseCard = ({
     fetchData();
   }, []);
 
-  const enrolled = user?.enrolledCourses?.includes(id) || false;
+
 
 
 

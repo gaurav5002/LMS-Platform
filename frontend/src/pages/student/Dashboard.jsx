@@ -14,14 +14,18 @@ const Dashboard = () => {
   const [dataLoaded, setDataLoaded] = useState(false);
 
   const fetchCourses = async () => {
+    if(!user) return; // Ensure user is defined before making API call
     try {
+      console.log("Fetching courses for user:", user._id);
+      console.log(user.enrolledCourses);
       const response = await axios.post(
         `${import.meta.env.VITE_API_USER_URL}/getAllCourses`,
         {},
         { withCredentials: true }
       );
+      console.log("Courses fetched:", response.data);
       
-      const userCourses = user?.enrolledCourses || [];
+      const userCourses = await user?.enrolledCourses || [];
       const res = response.data.courses.filter(
         course => userCourses.includes(course._id)
       );
@@ -46,7 +50,7 @@ const Dashboard = () => {
     return () => {
       clearTimeout(minLoadingTimer);
     };
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     // Hide loading screen when both conditions are met:

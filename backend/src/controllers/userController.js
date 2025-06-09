@@ -257,7 +257,7 @@ export async function updateProgress(req, res) {
         while (lessonprogress.length <= lessonidx) {
             lessonprogress.push([0, -1, 0]);
         }
-        const updated = lessonprogress[lessonidx].map((val, idx) => val + progressVector[idx]);
+        const updated = lessonprogress[lessonidx].map((val, idx) => Math.min(val + progressVector[idx], 1));
 
         updated[0] = Math.min(1, Math.max(0, updated[0]));
         updated[2] = Math.min(1, Math.max(0, updated[2]));
