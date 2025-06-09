@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import uploadRoutes from "./routes/fileUploadRoutes.js";
 import userRoutes from "./routes/UserRoutes.js"
 import paymentRoutes from "./routes/paymentRoutes.js"
+import adminRoutes from "./routes/adminRoutes.js";
 import cors from 'cors';
 
 
@@ -45,6 +46,7 @@ app.use("/api/auth",authRoutes);
 app.use("/api/users",userRoutes);
 app.use("/api/fileUpload",uploadRoutes);
 app.use("/api/payments",paymentRoutes);//for initial stages lets just have verify payment and enroll thing . not anything else . 
+app.use("/api/admin",adminRoutes);
 // app.use("api")
 
 dbConnect();

@@ -66,7 +66,6 @@ router.post('/getCourseIncome',getCourseIncome);
 router.post('/getTotalIncome',getTotalIncome);
 
 
-
 export default router;
 
 

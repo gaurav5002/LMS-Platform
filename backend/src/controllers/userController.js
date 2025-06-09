@@ -60,14 +60,13 @@ export async function  addLesson(req,res) {
             return res.status(403).json({success:false,message:"forbidden request you are not allowed to do this"})
         }
 
-        const {title,videoUrl,notesUrl,quizId,duration,description} = req.body;
+        const {title,videoUrl,notesUrl,duration,description} = req.body;
 
         const lesson = await Lesson.create({
             courseId,
             title,
             videoUrl,
             notesUrl,
-            quizId,
             duration,
             description
         })
@@ -299,9 +298,9 @@ export async function getProgress(req,res){
 export async function addQuiz(req,res){
     try {
         const lessonId = req.body.lessonId.toString();//you will get lesson id from the currrent course returning everything . store every lesson id in a local variables or some handling .
-        const {title,theoryQuestions,theoryAnswers,Mcqs,McqOpts} = req.body;
+        const {title,theoryQuestions,theoryAnswers,Mcqs,McqOpts,McqAnswers} = req.body;
         const newQuiz = await Quiz.create({
-            lessonId,title,theoryQuestions,theoryAnswers,Mcqs,McqOpts
+            lessonId,title,theoryQuestions,theoryAnswers,Mcqs,McqOpts,McqAnswers
         });
         const lesson = await Lesson.findById(lessonId);
         if(!lesson){

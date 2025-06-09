@@ -1,0 +1,24 @@
+adding a quiz 
+->
+you would need the following . 
+1) lessonId;
+title->string 
+theoryQuestions - > [string] like ["what is cse","what is ece"]
+theoryAnswers, - > [string] like  ["i dont know bro","i know it but i wont tell"];//the answers are case insensitive but are space sensitive
+Mcqs > [string] -> like ["what is d in dsa","what is c in cse"];
+McqOpts -> [[string]] ->like [
+    ["developement","data","discord"],
+    ["computer","humba bumba", "dumbe" ];
+]
+mcqKey ->[Number] -> [1,0];//since the first question d in dsa stands for data so the answer is 1. and second one correct answerr is computer so it is the same 
+
+
+submitting a Quiz 
+   required body = >  submittedTheoryAnswers, submittedMcqOpts, lessonId, lessonidx, courseId
+   //you can store lessonidx in frontend while you are populating using map so store an index with it.
+    for this you will get a score. or an error saying already submitted the quiz 
+    
+    submittedTheoryAnswers - >[string] like ["what the fuck do you mean by what is cse","how am i supposed to know"] so basically the first question was "what is cse " so if he entered an answer like "..." you have to send it in the corresponding index 
+    submittedMcqOpts ->[Number]->suppose he submitted 2nd option and 3rd option for the above quiz you are required to send [1,2]  to the backend as submittedMcqOpts.
+    in response you get a score and a success value .
+
