@@ -4,7 +4,7 @@ import useAuthStore from '../../zustand/authStore';
 import { addCourse } from '../../api/instructor';
 import toast from 'react-hot-toast';
 import { uploadFile } from '../../api/fileUpload';    
-const AddCourseModal = ({ isOpen, onClose }) => {
+const AddCourseModal = ({ isOpen, onClose, onCourseAdded }) => {
   const { user } = useAuthStore();
   const [formData, setFormData] = useState({
     title: '',
