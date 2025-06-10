@@ -22,6 +22,7 @@ import CourseDetails from "./pages/instructor/CourseDetails";
 import QuizManagement from "./pages/instructor/QuizManagement";
 import AdminDashboard from "./pages/admin/Dashboard";
 import InstructorRegister from "./pages/Auth/InstructorRegister";
+import AddDiscussion from "./pages/student/AddDiscussion";
 
 function App() {
   const { user, loading, initialCheckDone, initialize } = useAuthStore();
@@ -179,6 +180,12 @@ function App() {
               <ProtectedRouteWithRole allowedRoles={["user"]}>
                 <ViewCourseContent />
               </ProtectedRouteWithRole>
+            }
+          />
+          <Route
+            path="/course/:id/addDiscussion"
+            element={
+              <AddDiscussion />
             }
           />
 
