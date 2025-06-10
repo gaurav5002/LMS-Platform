@@ -67,8 +67,12 @@ const newCourseSchema = mongoose.Schema({
     price:{
         type:Number,
         required:true
+    },
+    totalEnrolledStudents:{
+      type:Number,
+      default:0
     }
-})
+});
 
 const Course = mongoose.model('Course',newCourseSchema);
 const Lesson = mongoose.model('Lesson',lessonSchema);
