@@ -31,4 +31,5 @@ export const getCurrentUser = () => axiosInstance.get('/me');
 export const googleLogin = (token) => axiosInstance.post('/googleLogin', { token });
 export const instructorRegister = (data) => axiosInstance.post('/instructorRegister', data);
 export const checkRequest = (email) => axiosInstance.post('/checkRequest', { email });
+export const tempRegisterInstructor = (data) => axiosInstance.post('/tempRegisterInstructor', data);
 export default axiosInstance;

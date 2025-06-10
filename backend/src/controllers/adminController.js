@@ -1,6 +1,7 @@
 import {Course,Lesson} from "../models/Course.js";
 import User from "../models/user.js";
 import Request from "../models/PendingRequests.js";
+import mongoose from "mongoose";
 
 export async function getIncome(req,res){
     try {
@@ -61,10 +62,16 @@ export async function verifyInstructor(req, res) {
         return res.status(403).json({ message: 'Forbidden: insufficient permissions' });
       }
   
-      const { instructorId } = req.body;
+      const { requestId } = req.body;
+      
+      const request = await Request.findById(requestId);
+      if (!request) {
+        return res.status(404).json({ message: 'Request not found' });
+      }
+      const instructorId = request.instructorId;
+      await Request.deleteMany({ instructorId });
   
-      await PendingRequests.deleteMany({ instructorId });
-  
+
       if (!mongoose.Types.ObjectId.isValid(instructorId)) {
         return res.status(400).json({ message: 'Invalid instructor ID' });
       }
@@ -135,11 +142,11 @@ export async function verifyInstructor(req, res) {
       }
   
       const email = instructor.email;
-      await PendingRequests.deleteOne({ instructorId: instructor._id });
+      await Request.deleteOne({ instructorId: instructor._id });
       await User.findByIdAndDelete(instructor._id);
   
       const sent = await sendEmail(email, {
-        subject: 'Regret from LearnHUB',
+        subject: 'Regret from EduCore',
         html: `<h1>Rejected for some reason. You can definitely reapply.</h1>`,
       });
   

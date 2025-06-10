@@ -29,7 +29,7 @@ const CourseCard = ({
       if(!enrolled)return;
       //setLoading(true);
       try {
-        console.log("idhr hu");
+       
         const progressResponse = await axios.post(
           `${import.meta.env.VITE_API_USER_URL}/getProgress`,
           { courseId: id },
@@ -37,14 +37,14 @@ const CourseCard = ({
         );
 
         const progressData = progressResponse.data.progress;
-        console.log("here", progressResponse)
+        
         if (!Array.isArray(progressData)) {
           console.error("Progress data is not an array!", progressData);
           return;
         }
 
 
-        console.log(progressData)
+        
         // Assuming `progress` is your 2D array and each row has 3 items
         let total = 0;
         for (const row of progressData) {
@@ -86,7 +86,7 @@ const CourseCard = ({
     }
   }, [])
 
-  console.log(progress)
+ 
   // const fetchData = async () =>{
   //   const response = await axios.post(
   //       `${import.meta.env.VITE_API_USER_URL}/getProgress`,

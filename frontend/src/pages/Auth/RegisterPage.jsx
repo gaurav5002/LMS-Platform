@@ -27,10 +27,21 @@ const RegisterPage = () => {
     setLoading(true);
 
     try {
-      
-      const response = await registerUser(formData);
-      if (response.data.success) {
-        navigate('/verify-email', { state: { email: formData.email,name:formData.name } });
+      if(formData.role === 'teacher'){
+        try{
+          const response = await tempRegisterInstructor(formData);
+          if (response.data.success) {
+            navigate('/verify-email', { state: { email: formData.email,name:formData.name } });
+          }
+        } catch (err) {
+          setError(err.message || 'An error occurred');
+        }
+      }
+      else{
+        const response = await registerUser(formData);
+        if (response.data.success) {
+          navigate('/verify-email', { state: { email: formData.email,name:formData.name } });
+        }
       }
     } catch (err) {
       setError(err.message || 'An error occurred');

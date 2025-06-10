@@ -16,14 +16,13 @@ const Dashboard = () => {
   const fetchCourses = async () => {
     if(!user) return; // Ensure user is defined before making API call
     try {
-      console.log("Fetching courses for user:", user._id);
-      console.log(user.enrolledCourses);
+      
       const response = await axios.post(
         `${import.meta.env.VITE_API_USER_URL}/getAllCourses`,
         {},
         { withCredentials: true }
       );
-      console.log("Courses fetched:", response.data);
+      
       
       const userCourses = await user?.enrolledCourses || [];
       const res = response.data.courses.filter(

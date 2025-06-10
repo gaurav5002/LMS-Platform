@@ -50,3 +50,27 @@ export const getPendingRequests = async () => {
         throw error.response?.data || { success: false, message: "Failed to fetch pending requests" };
     }
 };
+export const verifyInstructor = async (data) => {
+    try {
+        const response = await axiosInstance.post(`/verifyInstructor`, {requestId:data});
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || { success: false, message: "Failed to verify instructor" };
+    }
+};
+export const rejectInstructor = async (data) => {
+    try {
+        const response = await axiosInstance.post(`/rejectInstructor`, {requestId:data});
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || { success: false, message: "Failed to reject instructor" };
+    }
+};
+export const createAdmin = async (data) => {
+    try {
+        const response = await axiosInstance.post(`/createAdmin`, data);
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || { success: false, message: "Failed to create admin" };
+    }
+};
