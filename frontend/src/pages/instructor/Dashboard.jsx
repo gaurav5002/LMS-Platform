@@ -29,7 +29,7 @@ const Dashboard = () => {
 
       // Fetch total income
       const incomeResponse = await getTotalIncome();
-      const totalIncome = incomeResponse.data.totalIncome || 0;
+      const totalIncome = incomeResponse.data.income || 0;
 
       setStats({
         totalCourses: coursesData.length,
