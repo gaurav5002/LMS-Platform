@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import { Eye, EyeOff, User, Mail, Lock, GraduationCap, BookOpen } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import LearnHubLogo from '../../components/Common/LearnHubLogo';
-import { registerUser } from '../../api/auth';
+import { registerUser,tempRegisterInstructor } from '../../api/auth';
 
-const RegisterPage = () => {
+const RegisterPage = (onRegister) => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -31,7 +31,7 @@ const RegisterPage = () => {
         try{
           const response = await tempRegisterInstructor(formData);
           if (response.data.success) {
-            navigate('/verify-email', { state: { email: formData.email,name:formData.name } });
+            onRegister();
           }
         } catch (err) {
           setError(err.message || 'An error occurred');
