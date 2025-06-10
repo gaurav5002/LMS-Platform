@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Eye, EyeOff, User, Mail, Lock, GraduationCap, BookOpen } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import LearnHubLogo from '../../components/Common/LearnHubLogo';
-import { registerUser } from '../../api/auth';
+import { registerUser,tempRegisterInstructor } from '../../api/auth';
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
