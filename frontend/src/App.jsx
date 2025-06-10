@@ -119,7 +119,7 @@ function App() {
             path="/register"
             element={
               <PublicRoute>
-                <RegisterPage />
+                <RegisterPage onRegister={initialize} />
               </PublicRoute>
             }
           />
