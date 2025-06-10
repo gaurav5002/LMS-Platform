@@ -8,6 +8,7 @@ import useCourseStore from '../../zustand/currentCourse';
 import useAuthStore from '../../zustand/authStore'; // ✅ import auth store
 import useEnrollStore from '../../zustand/enrollCourse';
 import { useSidebarStore } from '../../zustand/useSidebarStore';
+import DiscussionList from '../../components/student/Discussions';
 
 const ShowCourse = () => {
   const navigate = useNavigate();
@@ -119,6 +120,7 @@ const ShowCourse = () => {
                     <span>{isEnrolled ? 'Continue Learning' : 'View Course Content'}</span>
                   </button>
                 </div>
+                <DiscussionList/>
               </div>
 
               <div className="space-y-4 sm:space-y-6">
@@ -168,6 +170,44 @@ const ShowCourse = () => {
                     </div>
                   </div>
                 </div>
+                {isEnrolled && (
+                  <div className="p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-sm space-y-3 sm:space-y-4" style={{ backgroundColor: '#FAF6E9' }}>
+                    <div className="text-lg sm:text-xl font-semibold text-gray-800 mb-3 sm:mb-4">Add Discussion</div>
+                    <button
+                      onClick={() => navigate(`/course/${id}/addDiscussion`)}
+                      className="group relative w-full overflow-hidden bg-gradient-to-r from-[#A0C878] to-[#8BB65C] hover:from-[#8BB65C] hover:to-[#7AA54A] text-white font-semibold py-4 sm:py-5 px-6 sm:px-8 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-[#A0C878]/30"
+                    >
+                      {/* Subtle shine effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+
+                      <div className="relative flex items-center justify-center space-x-3">
+                        {/* Plus icon */}
+                        <svg
+                          className="w-5 h-5 sm:w-6 sm:h-6 transition-transform duration-300 group-hover:rotate-90"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                        </svg>
+
+                        <span className="text-base sm:text-lg font-bold tracking-wide">
+                          Start New Discussion
+                        </span>
+
+                        {/* Arrow icon */}
+                        <svg
+                          className="w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 group-hover:translate-x-1"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                      </div>
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
