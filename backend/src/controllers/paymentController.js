@@ -6,7 +6,6 @@ import { Course } from "../models/Course.js";
 
 import dotenv from 'dotenv'
 import Cart from "../models/Cart.js";
-import UserProgress from "../models/UserProgress.js";
 dotenv.config();
 
 const razorpay = new Razorpay({
@@ -92,15 +91,14 @@ export const verifyPaymentAndEnroll = async (req, res) => {
       }
     }
 
+    const course = await Course.findByIdAndUpdate(courseId, {
+      $inc: { totalEnrolledStudents: 1 }
+    });
+    
 
     const enrolledCourses = user.enrolledCourses;
-    enrolledCourses.push(courseId);
     await User.findByIdAndUpdate(userId, {
       enrolledCourses: enrolledCourses
-    })
-    await UserProgress.create({
-      courseId,
-      userId: user._id,
     })
 
     res.status(200).json({ success: true, payment: newPayment });
