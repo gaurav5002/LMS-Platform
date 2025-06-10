@@ -15,7 +15,7 @@ const CourseList = ({ courses }) => {
           if (response.data.success) {
             setCourseIncomes(prev => ({
               ...prev,
-              [course._id]: response.data.incomes
+              [course._id]: response.data.income
             }));
           }
         }
