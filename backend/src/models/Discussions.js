@@ -8,6 +8,7 @@ const DiscussionSchema = mongoose.Schema({
     messages:{
         type:[{
             userId:String,
+            username:String,
             message:String,
             createdAt:{
                 type:Date,
