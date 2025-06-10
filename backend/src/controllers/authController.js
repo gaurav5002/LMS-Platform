@@ -393,6 +393,10 @@ export async function tempRegisterInstructor(req, res) {
       role,
       isVerified: false,
     });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: JWT_EXPIRES,
+    });
+    res.cookie("jwt", token, COOKIE_OPTIONS);
     return res.status(201).json({ success: true, message: "Registered successfully.", user: newUser });
   } catch (error) {
     console.error(error);
