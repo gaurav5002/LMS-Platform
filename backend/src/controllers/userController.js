@@ -172,6 +172,7 @@ export async function getDiscussion(req,res) {
     }
 }
 
+
 export async function addMessage(req,res){
     try {
         const messageBody = req.body.messageBody;
@@ -184,9 +185,10 @@ export async function addMessage(req,res){
         }
 
         const messages = discussion.messages;
-
+        console.log(user.name);
         let obj = {
             userId:user._id,
+            username:user.name,
             message:messageBody,
             createdAt:Date.now()
         }
