@@ -41,7 +41,7 @@ Follow these steps to set up and run the Collaborative Code Editor on your local
 
 ```bash
 git clone https://github.com/Gaurav5002/LMS-Platform.git
-cd Code-Collab
+cd LMS-Platform
 ```
 ### 2. Install dependencies: Both directories
 
