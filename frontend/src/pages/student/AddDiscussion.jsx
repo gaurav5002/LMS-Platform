@@ -33,7 +33,6 @@ const AddDiscussion = () => {
 
     setIsSubmitting(true);
             const apiUrl = `${import.meta.env.VITE_API_USER_URL}/addMessage`;
-        console.log('Posting discussion to:', apiUrl);
     try {
 
         const response  = await axios.post(`${import.meta.env.VITE_API_USER_URL}/addMessage`,{

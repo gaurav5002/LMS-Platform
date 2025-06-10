@@ -1,7 +1,7 @@
 import { BookOpen, Clock, GraduationCap, Users } from 'lucide-react';
 import React from 'react'
 
-const LoadingScreen = () => {
+const LoadingScreen = ({message="Loading..."}) => {
     return (
         <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#FAF6E9' }}>
             <div className="text-center max-w-md mx-auto px-6">
@@ -34,7 +34,7 @@ const LoadingScreen = () => {
 
                 {/* Loading Text */}
                 <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-2">Loading Courses</h2>
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">{message}</h2>
                     <p className="text-gray-600">Discovering amazing learning opportunities for you...</p>
                 </div>
 
@@ -49,7 +49,7 @@ const LoadingScreen = () => {
                 </div>
 
                 {/* Loading Steps */}
-                <div className="space-y-2 text-sm text-gray-500">
+                {/* <div className="space-y-2 text-sm text-gray-500">
                     <div className="flex items-center justify-center space-x-2">
                         <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                         <span>Fetching course catalog</span>
@@ -62,7 +62,7 @@ const LoadingScreen = () => {
                         <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
                         <span>Preparing your dashboard</span>
                     </div>
-                </div>
+                </div> */}
 
                 {/* Loading Animation Keyframes */}
                 <style jsx>{`

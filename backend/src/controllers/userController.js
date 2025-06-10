@@ -334,8 +334,9 @@ export async function submitQuiz(req, res) {
         if (!lesson) {
             return res.status(404).json({success:false, message: "Lesson not found" });
         }
-
+        console.log(lessonId, lessonidx, courseId);
         const existingProgress = await UserProgress.findOne({ courseId, userId: user._id });
+        console.log(submittedMcqOpts);
         if (!existingProgress) {
             return res.status(404).json({success:false, message: "User progress not found" });
         }
@@ -378,7 +379,7 @@ export async function submitQuiz(req, res) {
         await UserProgress.findByIdAndUpdate(existingProgress._id, {
             progress: existingProgress.progress
         });
-
+        console.log("score is", score);
         return res.status(200).json({
             success:true,
             message: "Quiz successfully submitted",
@@ -400,6 +401,7 @@ export async function getQuiz(req, res) {
             return res.status(400).json({success:false, message: "lessonId is required in the request body" });
         }
         const lesson = await Lesson.findById(lessonId);
+        console.log("Lesson ID:", lessonId);
         if (!lesson) {
             return res.status(404).json({success:false, message: "Lesson not found" });
         }
@@ -407,6 +409,7 @@ export async function getQuiz(req, res) {
         if (!quiz) {
             return res.status(404).json({success:false, message: "Quiz not found for this lesson" });
         }
+        console.log("Theory Questions:", quiz.theoryQuestions);
         return res.status(200).json({
             success:true,
             mcqQuestions: quiz.Mcqs,

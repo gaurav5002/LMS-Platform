@@ -79,7 +79,7 @@ const Browse = () => {
     };
   }, [isSidebarOpen]);
 
-  if (loading) return <LoadingScreen />;
+  if (loading) return <LoadingScreen message="Loading courses..." />;
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#FAF6E9' }}>

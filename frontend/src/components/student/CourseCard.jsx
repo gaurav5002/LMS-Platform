@@ -86,22 +86,7 @@ const CourseCard = ({
     }
   }, [])
 
- 
-  // const fetchData = async () =>{
-  //   const response = await axios.post(
-  //       `${import.meta.env.VITE_API_USER_URL}/getProgress`,
-  //       {courseId:id},
-  //       {
-  //         withCredentials: true, 
-  //       }
-  //     );
 
-  //   console.log(response)
-  // }
-
-  // useEffect( ()=>{
-  //   fetchData();
-  // },[id])
   const navigate = useNavigate();
   //console.log(id);
   const handleClick = () => {

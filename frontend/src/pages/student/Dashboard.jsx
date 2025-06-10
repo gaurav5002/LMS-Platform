@@ -83,7 +83,7 @@ const Dashboard = () => {
     };
   }, [isSidebarOpen]);
 
-  if (loading) return <LoadingScreen />;
+  if (loading) return <LoadingScreen message="Loading your courses..." />;
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#FAF6E9' }}>

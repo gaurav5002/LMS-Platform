@@ -36,7 +36,6 @@ const DiscussionList = () => {
         },{
             withCredentials: true
         })
-        console.log('Fetched discussions:', response.data);
         setDiscussions(response.data.messages || []);
         setTotalPages(Math.ceil(response.data.messages.length / DISCUSSIONS_PER_PAGE));
 

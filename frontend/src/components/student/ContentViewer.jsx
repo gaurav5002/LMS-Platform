@@ -3,7 +3,6 @@ import React from 'react';
 import { Play, FileText, HelpCircle } from 'lucide-react';
 
 const ContentViewer = ({ selectedItem, selectedType, title }) => {
-  console.log('Props received:', { selectedItem, selectedType, title });
   
   const renderViewer = () => {
     // Fix: Check for empty string, null, undefined, or missing values
@@ -27,7 +26,7 @@ const ContentViewer = ({ selectedItem, selectedType, title }) => {
     switch (selectedType) {
       
       case 'video':
-        console.log("here");
+       
         return (
           <div className="h-full min-h-[500px] rounded-xl p-6 flex flex-col border" style={{ backgroundColor: '#FFFDF6', borderColor: '#A0C878' }}>
             <div className="flex items-center mb-4">
