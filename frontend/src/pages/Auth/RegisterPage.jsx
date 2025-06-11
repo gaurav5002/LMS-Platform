@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import LearnHubLogo from '../../components/Common/LearnHubLogo';
 import { registerUser,tempRegisterInstructor } from '../../api/auth';
 
-const RegisterPage = (onRegister) => {
+const RegisterPage = ({onRegister}) => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
