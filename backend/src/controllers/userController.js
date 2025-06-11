@@ -75,9 +75,10 @@ export async function  addLesson(req,res) {
         if(!lessons.includes(lesson._id)){
             lessons.push(lesson._id);
         }
-
+        const dur = duration;
         await Course.findByIdAndUpdate(course._id,{
-            lessons:lessons
+            lessons:lessons,
+            $inc:{duration:dur}
         })
 
         return res.status(200).json({success:true,message:"Lesson has been added"});

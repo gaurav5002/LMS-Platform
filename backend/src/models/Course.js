@@ -71,6 +71,10 @@ const newCourseSchema = mongoose.Schema({
     totalEnrolledStudents:{
       type:Number,
       default:0
+    },
+    duration:{
+      type:Number,
+      default:0
     }
 });
 

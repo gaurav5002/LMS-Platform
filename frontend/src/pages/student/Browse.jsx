@@ -16,7 +16,7 @@ const Browse = () => {
   const fetchCourses = async () => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_USER_URL}/getAllCourses`,
+        `/api/users/getAllCourses`,
         {},
         { withCredentials: true }
       );

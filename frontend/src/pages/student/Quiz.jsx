@@ -36,7 +36,7 @@ const QuizPage = () => {
 
         try {
             const response = await Promise.all([
-                axios.post(`${import.meta.env.VITE_API_USER_URL}/getQuiz`, {
+                axios.post(`/api/users/getQuiz`, {
                     lessonId: lessonId
                 }, {
                     withCredentials: true

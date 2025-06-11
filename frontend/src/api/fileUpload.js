@@ -1,6 +1,6 @@
 import axios from 'axios';
 const axiosInstance = axios.create({
-  baseURL: `${import.meta.env.VITE_API_FILE_URL}`,
+  baseURL: "/api/fileUpload",
   withCredentials: true,
 });
 const uploadFile = async (formData) => {

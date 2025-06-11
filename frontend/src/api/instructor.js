@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with base URL and credentials
 const axiosInstance = axios.create({
-  baseURL: `${import.meta.env.VITE_API_USER_URL}`,
+  baseURL: "/api/users",
   withCredentials: true,
 });
 

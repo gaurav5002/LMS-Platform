@@ -176,7 +176,7 @@ const ViewCourseContent = () => {
 
 
       const response = await axios.post(
-        `${import.meta.env.VITE_API_USER_URL}/updateProgress`,
+        `/api/users/updateProgress`,
         {
           courseId: course.id,
           lessonidx: lessonIndex,  // Add lesson index

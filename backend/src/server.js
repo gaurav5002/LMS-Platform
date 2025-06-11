@@ -25,22 +25,6 @@ app.use(cors({
   allowedHeaders: ['Content-Type','Authorization','X-Requested-With']
 }));
 
-app.use((req, res, next) => {
-  res.setHeader("Content-Security-Policy",
-  "default-src 'self'; " +
-  "script-src 'self'; " +
-  "style-src 'self'; " +
-  "img-src 'self'; " +
-  "font-src 'self'; " +
-  "object-src 'none'; " +
-  "frame-ancestors 'none'; " +
-  "base-uri 'self'; " +
-  "form-action 'self'; " +
-  "upgrade-insecure-requests;"
-);
-
-  next();
-});
 
 app.use("/api/auth",authRoutes);
 app.use("/api/users",userRoutes);

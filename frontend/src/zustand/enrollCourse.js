@@ -25,7 +25,7 @@ const useEnrollStore = create((set) => ({
 
       // Step 1: Create Razorpay order
       const orderRes = await fetch(
-        `${import.meta.env.VITE_API_PAYMENT_URL}/createPayment`,
+        `/api/payments/createPayment`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -50,7 +50,7 @@ const useEnrollStore = create((set) => ({
           order_id: order.id,
           handler: async function (response) {
             const verifyRes = await fetch(
-              `${import.meta.env.VITE_API_PAYMENT_URL}/verifyPaymentAndEnroll`,
+              `/api/payments/verifyPaymentAndEnroll`,
               {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
