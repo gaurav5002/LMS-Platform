@@ -30,7 +30,7 @@ const ViewCourseContent = () => {
 
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_API_USER_URL}/getCurrentCourse`,
+          `api/users/getCurrentCourse`,
           { courseId: course.id },
           { withCredentials: true }
         );
@@ -48,7 +48,7 @@ const ViewCourseContent = () => {
           // Fetch progress data from server
           try {
             const progressResponse = await axios.post(
-              `${import.meta.env.VITE_API_USER_URL}/getProgress`,
+              `api/users/getProgress`,
               { courseId: course.id },
               { withCredentials: true }
             );
