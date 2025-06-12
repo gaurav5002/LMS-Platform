@@ -97,6 +97,7 @@ export const verifyPaymentAndEnroll = async (req, res) => {
     
 
     const enrolledCourses = user.enrolledCourses;
+    enrolledCourses.push(courseId);
     await User.findByIdAndUpdate(userId, {
       enrolledCourses: enrolledCourses
     })
