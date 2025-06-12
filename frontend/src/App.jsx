@@ -23,6 +23,8 @@ import QuizManagement from "./pages/instructor/QuizManagement";
 import AdminDashboard from "./pages/admin/Dashboard";
 import InstructorRegister from "./pages/Auth/InstructorRegister";
 import AddDiscussion from "./pages/student/AddDiscussion";
+import QuizPage from "./pages/student/Quiz";
+
 
 function App() {
   const { user, loading, initialCheckDone, initialize } = useAuthStore();
@@ -180,6 +182,12 @@ function App() {
               <ProtectedRouteWithRole allowedRoles={["user"]}>
                 <ViewCourseContent />
               </ProtectedRouteWithRole>
+            }
+          />
+          <Route
+            path="/course/:id/viewCourse/:lessonId/:lessonidx"
+            element={
+              <QuizPage />
             }
           />
           <Route
