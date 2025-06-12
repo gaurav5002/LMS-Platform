@@ -53,7 +53,7 @@ const ShowCourse = () => {
           <div className="flex items-center justify-between max-w-7xl mx-auto">
             <div className="flex items-center space-x-2 sm:space-x-4">
               <button
-                onClick={() => navigate(-1)}
+                onClick={() => navigate("/dashboard")}
                 className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 rounded-lg hover:bg-white/50 transition-colors"
               >
                 <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
