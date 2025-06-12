@@ -31,7 +31,7 @@ const DiscussionList = () => {
     setLoading(true);
     
     try {
-        const response = await axios.post(`${import.meta.env.VITE_API_USER_URL}/getDiscussion`, {
+        const response = await axios.post(`api/users/getDiscussion`, {
             courseId: id, 
         },{
             withCredentials: true
@@ -41,7 +41,6 @@ const DiscussionList = () => {
 
     } catch (error) {
         console.error('Error fetching discussions:', error);
-        toast.error('Failed to load discussions. Please try again later.');
     } finally {
       setLoading(false);
     }
