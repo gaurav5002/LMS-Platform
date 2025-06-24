@@ -22,7 +22,7 @@ router.post('/enrollInCourse',enroll);//we will have to add the payment middle w
 
 
 
-router.post('/getCurrentCourse',getCurrentCourse);//done
+router.post('/getCurrentCourse',enrollmentAccess,getCurrentCourse);//done
 
 
 
