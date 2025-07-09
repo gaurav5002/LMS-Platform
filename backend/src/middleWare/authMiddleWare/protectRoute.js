@@ -70,8 +70,7 @@ const enrollmentAccess = async(req,res,next)=>{
     try {
         const user = req.user;
         const courseId = req.body.courseId;
-        const lessonidx = req.body.lessonidx;
-        if(!user.enrolledCourses.includes(courseId) && lessonidx>1){
+        if(!user.enrolledCourses.includes(courseId)){
             req.enrolled = false;
         }else{
             req.enrolled = true;

@@ -105,7 +105,13 @@ export async function getCurrentCourse(req,res){
             return res.status(404).json({success : false,message:"course not found"})
         }
         const arrayOfLessons = await Lesson.find({_id:{$in:course.lessons}});
-        return res.status(200).json({success:true,message:"course Fetched",course,arrayOfLessons});
+        if(!req.enrolled){
+             return res.status(200).json({success:true,message:"course Fetched",course,arrayOfLessons:[arrayOfLessons[0]]});
+        }
+        else{
+             return res.status(200).json({success:true,message:"course Fetched",course,arrayOfLessons});
+        }
+       
     } catch (e) {
         return res.status(500).json({success:false,message:"internalServerError",e});
     }
